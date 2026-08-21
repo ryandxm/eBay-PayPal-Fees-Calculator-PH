@@ -244,6 +244,51 @@
   .tax-note.zero{ border-left-color: var(--text-faint); }
   .tax-note.precise{ border-left-color: var(--green); }
 
+  .info-toggle{
+    margin-top: 10px;
+  }
+  .info-toggle summary{
+    list-style: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 13px;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 12px;
+    color: var(--text-dim);
+    cursor: pointer;
+    user-select: none;
+    min-height: 20px;
+  }
+  .info-toggle summary::-webkit-details-marker{ display:none; }
+  .info-toggle summary::before{
+    content: 'ⓘ';
+    color: var(--accent-text);
+    font-size: 13px;
+  }
+  .info-toggle summary::after{
+    content: '';
+    width: 6px; height: 6px;
+    border-right: 1.5px solid var(--text-faint);
+    border-bottom: 1.5px solid var(--text-faint);
+    transform: rotate(45deg);
+    margin-left: 2px;
+    transition: transform .15s ease;
+  }
+  .info-toggle[open] summary::after{ transform: rotate(-135deg); }
+  .info-toggle .info-body{
+    font-size: 11.5px;
+    color: var(--text-dim);
+    line-height: 1.55;
+    margin-top: 8px;
+    padding: 10px 12px;
+    background: var(--panel-2);
+    border-radius: 10px;
+    border-left: 3px solid var(--accent-line);
+  }
+
   .line{
     display:flex;
     justify-content: space-between;
@@ -346,15 +391,15 @@
     margin-top: 14px;
   }
 
-  #paypalTab{ display:none; }
+  #ebayTab{ display:none; }
 </style>
 </head>
-<body class="theme-ebay">
+<body class="theme-paypal">
 <div class="wrap">
 
   <div class="platform-tabs">
-    <div class="platform-tab tab-ebay active" id="tabEbayBtn" onclick="switchTab('ebay')">eBay Fees</div>
-    <div class="platform-tab tab-paypal" id="tabPaypalBtn" onclick="switchTab('paypal')">PayPal Fees</div>
+    <div class="platform-tab tab-paypal active" id="tabPaypalBtn" onclick="switchTab('paypal')">PayPal Fees</div>
+    <div class="platform-tab tab-ebay" id="tabEbayBtn" onclick="switchTab('ebay')">eBay Fees</div>
   </div>
 
   <!-- ===================== EBAY TAB ===================== -->
@@ -405,7 +450,10 @@
           <span class="suffix">%</span>
         </div>
       </div>
-      <div class="tax-note" id="taxNote">Pick the buyer's state or country above to auto-fill a tax rate.</div>
+      <details class="info-toggle">
+        <summary>About this rate</summary>
+        <div class="info-body" id="taxNote">Pick the buyer's state or country above to auto-fill a tax rate.</div>
+      </details>
     </div>
 
     <div class="card">
@@ -547,18 +595,9 @@
         </div>
       </div>
       <div class="field">
-        <label>Rate type <span class="hint">which applies to your account</span></label>
+        <label>PayPal rate <span class="hint">% — auto-set by Merchant Rate tier</span></label>
         <div class="input-row">
-          <select id="ppRateType">
-            <option value="standard">Standard Rate — flat 4.40%</option>
-            <option value="merchant">Merchant Rate — tiered by volume</option>
-          </select>
-        </div>
-      </div>
-      <div class="field">
-        <label>PayPal international rate <span class="hint" id="ppRateHint">% — flat, PH receiving int'l G&amp;S</span></label>
-        <div class="input-row">
-          <input type="number" id="ppRate" value="4.40" step="0.01" inputmode="decimal">
+          <input type="number" id="ppRate" value="4.40" step="0.01" inputmode="decimal" readonly>
           <span class="suffix">%</span>
         </div>
       </div>
@@ -569,21 +608,23 @@
           <input type="number" id="ppFixed" value="0.30" step="0.01" inputmode="decimal">
         </div>
       </div>
-      <div class="tax-note" id="ppRateNote">Philippine accounts fall under PayPal's "All other markets" tier for receiving international G&amp;S payments — a flat 4.40% + $0.30, regardless of transaction size. This is the default rate; no application needed.</div>
-      <div class="tax-note" id="ppMerchantTable" style="display:none; margin-top:8px;">
-        <strong>Merchant Rate tiers</strong> (requires PayPal application/approval and qualifying monthly volume):<br>
-        Up to $3,000 — 4.4%<br>
-        $3,000.01–$10,000 — 3.9%<br>
-        $10,000.01–$100,000 — 3.7%<br>
-        Above $100,000.01 — 3.4%<br>
-        <em>Tier is looked up using the total amount received above (as a stand-in for monthly volume — PayPal actually bases this on your previous calendar month's total).</em>
-      </div>
+      <details class="info-toggle">
+        <summary>About Merchant Rate tiers</summary>
+        <div class="info-body">
+          Requires PayPal application/approval and qualifying monthly volume:<br>
+          Up to $3,000 — 4.4%<br>
+          $3,000.01–$10,000 — 3.9%<br>
+          $10,000.01–$100,000 — 3.7%<br>
+          Above $100,000.01 — 3.4%<br><br>
+          Tier is looked up using the total amount received below (as a stand-in for monthly volume — PayPal actually bases this on your previous calendar month's total). The rate field above is auto-filled but editable if you know your actual approved rate.
+        </div>
+      </details>
     </div>
 
     <div class="card">
       <h2>Resulting Deductions</h2>
       <div class="line">
-        <div class="label">Total amount received</div>
+        <div class="label">Total amount received<span class="desc" id="ppDescGross">item + shipping</span></div>
         <div class="amt neutral" id="ppOutGross">$0.00</div>
       </div>
       <div class="line">
@@ -616,11 +657,15 @@
         <div class="k">You want to receive</div>
         <div class="v" id="ppSuggestWant">$0.00</div>
       </div>
+      <div class="row">
+        <div class="k">G&amp;S fee<span class="desc" id="ppSuggestFeeDesc" style="font-size:10.5px;"></span></div>
+        <div class="v" id="ppSuggestFee">$0.00</div>
+      </div>
       <div class="row hero">
         <div class="k">Ask the buyer for</div>
         <div class="v" id="ppSuggestAsk">$0.00</div>
       </div>
-      <div class="note">This "grosses up" your desired amount so that after PayPal takes its 4.40% + $0.30, you're left with exactly what you wanted.</div>
+      <div class="note">This "grosses up" your desired amount so that after PayPal takes its cut, you're left with exactly what you wanted.</div>
     </div>
 
     <details class="formula-card card">
@@ -629,7 +674,7 @@
     </details>
 
     <div class="src">
-      Verified directly against PayPal Philippines' official Merchant Fees table (last updated 28 May 2026): Philippines falls under "All other markets" for receiving international commercial transactions — a flat 4.40% + fixed fee, confirmed not to be part of PayPal's tiered $0.01–3,000 / $3,000+ Merchant Rate structure, which only applies to a specific list of Latin American, Middle Eastern, and African markets that excludes the Philippines. Fixed fee (0.30 USD / 15.00 PHP) also confirmed from the same table. PayPal may update rates at any time — verify at paypal.com/ph/business/paypal-business-fees before relying on this for a real transaction.
+      PayPal's flat 4.40% + $0.30 "Standard Rate" for Philippine accounts receiving international payments is directly confirmed from PayPal Philippines' official Merchant Fees table (last updated 28 May 2026). The tiered Merchant Rate ladder above reflects rates provided for accounts approved into that program — PayPal bases real eligibility and tier lookup on your trailing monthly volume, not a single transaction. Verify your actual approved rate at paypal.com/ph/business/paypal-business-fees or your account dashboard before relying on this for a real transaction.
     </div>
   </div>
 
@@ -953,25 +998,19 @@ Net Payout = (Item + Shipping) − Total Fees
     const gross = round2(item + ship);
     const fixed = parseFloat(el('ppFixed').value) || 0;
 
-    let rate;
-    if(el('ppRateType').value === 'merchant'){
-      rate = merchantTierRate(gross) / 100;
-      el('ppRate').value = (rate*100).toFixed(2);
-      el('ppRate').disabled = true;
-    } else {
-      el('ppRate').disabled = false;
-      rate = (parseFloat(el('ppRate').value) || 0) / 100;
-    }
+    const rate = merchantTierRate(gross) / 100;
+    el('ppRate').value = (rate*100).toFixed(2);
 
     const ppFee = round2(gross * rate + fixed);
     const afterFee = round2(gross - ppFee);
 
+    el('ppDescGross').textContent = ship > 0 ? `${item.toFixed(2)} + ${ship.toFixed(2)}` : `item cost only, no shipping entered`;
     el('ppOutGross').textContent = fmt(gross);
     el('ppDescFee').textContent = `${gross.toFixed(2)} × ${(rate*100).toFixed(2)}% + ${fixed.toFixed(2)}`;
     el('ppOutFee').textContent = '-' + fmt(ppFee);
     el('ppOutAfterFee').textContent = fmt(afterFee);
 
-    calcPayPalSuggestion(rate, fixed);
+    calcPayPalSuggestion(fixed);
   }
 
   function merchantTierRate(amount){
@@ -981,19 +1020,30 @@ Net Payout = (Item + Shipping) − Total Fees
     return 3.4;
   }
 
-  function calcPayPalSuggestion(rate, fixed){
+  function calcPayPalSuggestion(fixed){
     const desiredNet = parseFloat(el('ppDesiredNet').value) || 0;
     if(desiredNet <= 0){
       el('ppSuggestBox').style.display = 'none';
       el('ppFormulaBlock').innerHTML = 'Enter an amount above to see the suggested invoice total.';
       return;
     }
-    const suggestedAsk = round2((desiredNet + fixed) / (1 - rate));
+    // Rate depends on the final ask amount's own tier, so solve then re-check
+    // in case grossing up pushes the total across a tier boundary.
+    let rate = merchantTierRate(desiredNet) / 100;
+    let suggestedAsk = round2((desiredNet + fixed) / (1 - rate));
+    const rate2 = merchantTierRate(suggestedAsk) / 100;
+    if(rate2 !== rate){
+      rate = rate2;
+      suggestedAsk = round2((desiredNet + fixed) / (1 - rate));
+    }
+    const gsFee = round2(suggestedAsk - desiredNet);
     const checkFee = round2(suggestedAsk * rate + fixed);
     const checkNet = round2(suggestedAsk - checkFee);
 
     el('ppSuggestBox').style.display = 'block';
     el('ppSuggestWant').textContent = fmt(desiredNet);
+    el('ppSuggestFeeDesc').textContent = ` (${(rate*100).toFixed(2)}% tier)`;
+    el('ppSuggestFee').textContent = fmt(gsFee);
     el('ppSuggestAsk').textContent = fmt(suggestedAsk);
 
     el('ppFormulaBlock').innerHTML =
@@ -1001,11 +1051,14 @@ Net Payout = (Item + Shipping) − Total Fees
               = (${desiredNet.toFixed(2)} + ${fixed.toFixed(2)}) ÷ (1 − ${(rate*100).toFixed(2)}%)
               = <span class="v">${suggestedAsk.toFixed(2)}</span>
 
+G&S fee shown above = Ask − Desired net
+                     = ${suggestedAsk.toFixed(2)} − ${desiredNet.toFixed(2)} = <span class="v">${gsFee.toFixed(2)}</span>
+
 Check:
 PayPal fee    = ${suggestedAsk.toFixed(2)} × ${(rate*100).toFixed(2)}% + ${fixed.toFixed(2)} = <span class="r">${checkFee.toFixed(2)}</span>
 You receive   = ${suggestedAsk.toFixed(2)} − ${checkFee.toFixed(2)} = <span class="v">${checkNet.toFixed(2)}</span>  (matches your desired ${desiredNet.toFixed(2)})
 
-Note: this suggestion is independent of the item/shipping amounts entered above.`;
+Note: this suggestion looks up its own Merchant Rate tier based on the ask amount — independent of the item/shipping amounts entered above.`;
   }
 
   // ============ INIT ============
@@ -1037,17 +1090,12 @@ Note: this suggestion is independent of the item/shipping amounts entered above.
   setMode('us');
   calc();
 
-  ['ppItemAmount','ppShipAmount','ppRate','ppFixed','ppDesiredNet'].forEach(id => {
+  ['ppItemAmount','ppShipAmount','ppFixed','ppDesiredNet'].forEach(id => {
     el(id).addEventListener('input', calcPayPal);
   });
-  el('ppRateType').addEventListener('change', () => {
-    const isMerchant = el('ppRateType').value === 'merchant';
-    el('ppRateNote').style.display = isMerchant ? 'none' : 'block';
-    el('ppMerchantTable').style.display = isMerchant ? 'block' : 'none';
-    el('ppRateHint').textContent = isMerchant ? '% — auto-set by tier, read-only' : '% — flat, PH receiving int\'l G&S';
-    calcPayPal();
-  });
   calcPayPal();
+
+  switchTab('paypal');
 </script>
 </body>
 </html>
