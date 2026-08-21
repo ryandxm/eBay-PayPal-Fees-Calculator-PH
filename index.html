@@ -26,10 +26,10 @@
     --green: #5CAE8C;
 
     /* eBay pastel palette */
-    --ebay-accent: #4F8FD1;
-    --ebay-accent-dim: #DCEBFA;
-    --ebay-accent-line: #B9D6F2;
-    --ebay-accent-text: #2E5F94;
+    --ebay-accent: #6FAE8C;
+    --ebay-accent-dim: #DDF0E5;
+    --ebay-accent-line: #B7DFC9;
+    --ebay-accent-text: #2E7A54;
     --ebay-red: #E8927C;
     --ebay-yellow: #EFC272;
     --ebay-green: #8FBF8A;
@@ -520,7 +520,7 @@
     </details>
 
     <div class="src">
-      City-level rates cover major metros in 16 higher-volume states; other states use a statewide average. Local rates change quarterly and can still vary by ZIP within a city, so treat any auto-filled number as your best estimate, not a guarantee. eBay itself only knows the real rate once it has the buyer's full shipping address, which usually isn't visible before an offer is accepted. Sources: eBay Tax Policy / Taxes &amp; Import Charges help pages, Avalara, Tax Foundation, state revenue departments.
+      City-level rates cover major metros in 16 higher-volume states; other states use a statewide average. eBay's own tax page confirms it collects and remits sales tax based on the buyer's exact address in every state with a sales tax (only Alabama publishes a flat rate — 8%, used here) — there's no official per-state rate table beyond that, so these averages are the closest practical estimate. Cross-checked against Taxually's 2025 state rate data, which also caught a real update: Louisiana raised its state rate from 4.45% to 5.00%, reflected here. Rates vary further by product category (some categories are exempt or taxed differently) and change over time, so treat any auto-filled number as a solid estimate, not a guarantee. Sources: eBay Taxes &amp; Import Charges help page, Taxually, Avalara, TaxCloud, Tax Foundation, state revenue departments.
     </div>
   </div>
 
@@ -581,24 +581,12 @@
         <div class="label">PayPal fee<span class="desc" id="ppDescFee">total × 4.40% + $0.30</span></div>
         <div class="amt" id="ppOutFee">$0.00</div>
       </div>
-      <div class="line total">
-        <div class="label">You receive</div>
-        <div class="amt" id="ppOutAfterFee">$0.00</div>
-      </div>
     </div>
 
     <div class="payout">
-      <div class="row">
-        <div class="k">Total amount received</div>
-        <div class="v" id="ppSummaryGross">$0.00</div>
-      </div>
-      <div class="row">
-        <div class="k">PayPal fee</div>
-        <div class="v" id="ppSummaryFee">−$0.00</div>
-      </div>
       <div class="row hero">
         <div class="k">You receive</div>
-        <div class="v" id="ppSummaryNet">$0.00</div>
+        <div class="v" id="ppOutAfterFee">$0.00</div>
       </div>
     </div>
 
@@ -632,7 +620,7 @@
     </details>
 
     <div class="src">
-      Figures sourced from PayPal Philippines' official Merchant Fees page (last updated 28 May 2026). PayPal may update rates at any time — verify at paypal.com/ph/business/paypal-business-fees before relying on this for a real transaction.
+      Verified directly against PayPal Philippines' official Merchant Fees table (last updated 28 May 2026): Philippines falls under "All other markets" for receiving international commercial transactions — a flat 4.40% + fixed fee, confirmed not to be part of PayPal's tiered $0.01–3,000 / $3,000+ Merchant Rate structure, which only applies to a specific list of Latin American, Middle Eastern, and African markets that excludes the Philippines. Fixed fee (0.30 USD / 15.00 PHP) also confirmed from the same table. PayPal may update rates at any time — verify at paypal.com/ph/business/paypal-business-fees before relying on this for a real transaction.
     </div>
   </div>
 
@@ -659,10 +647,10 @@
     CA:["California",8.85], CO:["Colorado",7.81], CT:["Connecticut",6.35], DE:["Delaware",0],
     FL:["Florida",7.02], GA:["Georgia",7.38], HI:["Hawaii",4.44], ID:["Idaho",6.02],
     IL:["Illinois",8.86], IN:["Indiana",7.00], IA:["Iowa",6.94], KS:["Kansas",8.70],
-    KY:["Kentucky",6.00], LA:["Louisiana",9.56], ME:["Maine",5.50], MD:["Maryland",6.00],
+    KY:["Kentucky",6.00], LA:["Louisiana",10.11], ME:["Maine",5.50], MD:["Maryland",6.00],
     MA:["Massachusetts",6.25], MI:["Michigan",6.00], MN:["Minnesota",7.49], MS:["Mississippi",7.07],
     MO:["Missouri",8.39], MT:["Montana",0], NE:["Nebraska",6.94], NV:["Nevada",8.23],
-    NH:["New Hampshire",0], NJ:["New Jersey",6.60], NM:["New Mexico",7.72], NY:["New York",8.53],
+    NH:["New Hampshire",0], NJ:["New Jersey",6.625], NM:["New Mexico",7.72], NY:["New York",8.53],
     NC:["North Carolina",6.98], ND:["North Dakota",6.96], OH:["Ohio",7.24], OK:["Oklahoma",8.98],
     OR:["Oregon",0], PA:["Pennsylvania",6.34], RI:["Rhode Island",7.00], SC:["South Carolina",7.46],
     SD:["South Dakota",6.11], TN:["Tennessee",9.55], TX:["Texas",8.20], UT:["Utah",7.19],
@@ -971,10 +959,6 @@ Net Payout = (Item + Shipping) − Total Fees
     el('ppDescFee').textContent = `${gross.toFixed(2)} × ${(rate*100).toFixed(2)}% + ${fixed.toFixed(2)}`;
     el('ppOutFee').textContent = '-' + fmt(ppFee);
     el('ppOutAfterFee').textContent = fmt(afterFee);
-
-    el('ppSummaryGross').textContent = fmt(gross);
-    el('ppSummaryFee').textContent = '-' + fmt(ppFee);
-    el('ppSummaryNet').textContent = fmt(afterFee);
 
     calcPayPalSuggestion(rate, fixed);
   }
