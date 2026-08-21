@@ -248,48 +248,15 @@
   .tax-note.zero{ border-left-color: var(--text-faint); }
   .tax-note.precise{ border-left-color: var(--green); }
 
-  .title-row{
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    position: relative;
-  }
-  .title-row h1{ margin: 0; }
-  .title-warn{
-    position: relative;
-    flex-shrink: 0;
-  }
-  .title-warn summary{
-    list-style: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 30px;
-    height: 30px;
-    margin-top: 2px;
-    border-radius: 50%;
-    font-size: 13px;
-    cursor: pointer;
-    user-select: none;
-    background: #FBF1DC;
-    border: 1px solid #EFDBAA;
-  }
-  .title-warn summary::-webkit-details-marker{ display:none; }
-  .title-warn-body{
-    position: absolute;
-    top: 40px;
-    right: 0;
-    width: 260px;
-    max-width: 78vw;
-    z-index: 20;
+  .bottom-banner{
     font-size: 11.5px;
     line-height: 1.5;
     color: #8A6A2E;
     background: #FBF1DC;
     border: 1px solid #EFDBAA;
     border-radius: 12px;
-    padding: 12px 14px;
-    box-shadow: 0 4px 14px rgba(20,30,40,0.10);
+    padding: 11px 14px;
+    margin-bottom: 16px;
   }
 
   .info-toggle{
@@ -453,15 +420,7 @@
   <!-- ===================== EBAY TAB ===================== -->
   <div id="ebayTab">
     <div class="eyebrow">Philippines → International</div>
-    <div class="title-row">
-      <h1>eBay Fee Calculator</h1>
-      <details class="title-warn">
-        <summary>⚠️</summary>
-        <div class="title-warn-body">
-          <strong>Early demo, not an official tool.</strong> There's no single public record of exact sales tax for every U.S. state, city, and product category — these are best-effort estimates, not guaranteed figures. eBay itself calculates the real rate live from the buyer's exact address at checkout. Use this to get in the right ballpark before accepting an offer, at your own discretion — not as a final number.
-        </div>
-      </details>
-    </div>
+    <h1>eBay Fee Calculator</h1>
     <p class="sub">Estimates eBay's Final Value Fee, buyer tax, and Philippines VAT on fees for a cross-border eBay sale.</p>
 
     <div class="card">
@@ -623,9 +582,16 @@
       <pre id="formulaBlock"></pre>
     </details>
 
-    <div class="src">
-      City-level rates cover major metros in 16 higher-volume states; other states use a statewide average. eBay's own tax page confirms it collects and remits sales tax based on the buyer's exact address in every state with a sales tax (only Alabama publishes a flat rate — 8%, used here) — there's no official per-state rate table beyond that, so these averages are the closest practical estimate. Cross-checked against Taxually's 2025 state rate data, which also caught a real update: Louisiana raised its state rate from 4.45% to 5.00%, reflected here. Rates vary further by product category (some categories are exempt or taxed differently) and change over time, so treat any auto-filled number as a solid estimate, not a guarantee. Sources: eBay Taxes &amp; Import Charges help page, Taxually, Avalara, TaxCloud, Tax Foundation, state revenue departments.
+    <div class="bottom-banner">
+      ⚠️ Early demo — sales tax figures are best-effort estimates, not official data. Use at your own discretion.
     </div>
+
+    <details class="info-toggle">
+      <summary>Sources &amp; methodology</summary>
+      <div class="info-body">
+        City-level rates cover major metros in 16 higher-volume states; other states use a statewide average. eBay's own tax page confirms it collects and remits sales tax based on the buyer's exact address in every state with a sales tax (only Alabama publishes a flat rate — 8%, used here) — there's no official per-state rate table beyond that, so these averages are the closest practical estimate. Cross-checked against Taxually's 2025 state rate data, which also caught a real update: Louisiana raised its state rate from 4.45% to 5.00%, reflected here. Rates vary further by product category and change over time. Sources: eBay Taxes &amp; Import Charges help page, Taxually, Avalara, TaxCloud, Tax Foundation, state revenue departments.
+      </div>
+    </details>
   </div>
 
   <!-- ===================== PAYPAL TAB ===================== -->
