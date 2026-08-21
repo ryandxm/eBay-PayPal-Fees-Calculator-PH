@@ -186,6 +186,10 @@
     width: 100%;
     -moz-appearance: textfield;
   }
+  .input-row input::placeholder{
+    color: var(--text-faint);
+    opacity: 1;
+  }
   .input-row select{
     -webkit-appearance: none;
     appearance: none;
@@ -243,6 +247,25 @@
   }
   .tax-note.zero{ border-left-color: var(--text-faint); }
   .tax-note.precise{ border-left-color: var(--green); }
+
+  .disclaimer{
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #8A6A2E;
+    background: #FBF1DC;
+    border: 1px solid #EFDBAA;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 20px;
+  }
+  .disclaimer .icon{
+    font-size: 15px;
+    line-height: 1.4;
+    flex-shrink: 0;
+  }
 
   .info-toggle{
     margin-top: 10px;
@@ -408,6 +431,11 @@
     <h1>eBay Fee Calculator</h1>
     <p class="sub">Estimates eBay's Final Value Fee, buyer tax, and Philippines VAT on fees for a cross-border eBay sale.</p>
 
+    <div class="disclaimer">
+      <span class="icon">⚠️</span>
+      <span><strong>Early demo, not an official tool.</strong> There's no single public record of exact sales tax for every U.S. state, city, and product category — these are best-effort estimates, not guaranteed figures. eBay itself calculates the real rate live from the buyer's exact address at checkout. Use this to get in the right ballpark before accepting an offer, at your own discretion — not as a final number.</span>
+    </div>
+
     <div class="card">
       <h2>Buyer Location</h2>
       <div class="toggle-row">
@@ -446,7 +474,7 @@
       <div class="field">
         <label>Tax rate applied <span class="hint">auto-filled — editable if you know the exact rate</span></label>
         <div class="input-row">
-          <input type="number" id="taxRate" value="0" step="0.001" inputmode="decimal">
+          <input type="number" id="taxRate" value="" placeholder="0" step="0.001" inputmode="decimal">
           <span class="suffix">%</span>
         </div>
       </div>
@@ -462,14 +490,14 @@
         <label>Item price <span class="hint">USD</span></label>
         <div class="input-row">
           <span class="prefix">$</span>
-          <input type="number" id="itemPrice" value="0" step="0.01" inputmode="decimal">
+          <input type="number" id="itemPrice" value="" placeholder="0" step="0.01" inputmode="decimal">
         </div>
       </div>
       <div class="field">
         <label>Shipping charged to buyer <span class="hint">USD, 0 if free</span></label>
         <div class="input-row">
           <span class="prefix">$</span>
-          <input type="number" id="shipPrice" value="0" step="0.01" inputmode="decimal">
+          <input type="number" id="shipPrice" value="" placeholder="0" step="0.01" inputmode="decimal">
         </div>
       </div>
     </div>
@@ -584,14 +612,14 @@
         <label>Item cost <span class="hint">USD</span></label>
         <div class="input-row">
           <span class="prefix">$</span>
-          <input type="number" id="ppItemAmount" value="0" step="0.01" inputmode="decimal">
+          <input type="number" id="ppItemAmount" value="" placeholder="0" step="0.01" inputmode="decimal">
         </div>
       </div>
       <div class="field">
         <label>Shipping fee <span class="hint">USD, optional — 0 if none</span></label>
         <div class="input-row">
           <span class="prefix">$</span>
-          <input type="number" id="ppShipAmount" value="0" step="0.01" inputmode="decimal">
+          <input type="number" id="ppShipAmount" value="" placeholder="0" step="0.01" inputmode="decimal">
         </div>
       </div>
       <div class="field">
@@ -646,7 +674,7 @@
         <label>Amount you actually want to receive <span class="hint">USD, after PayPal's cut</span></label>
         <div class="input-row">
           <span class="prefix">$</span>
-          <input type="number" id="ppDesiredNet" value="0" step="0.01" inputmode="decimal">
+          <input type="number" id="ppDesiredNet" value="" placeholder="0" step="0.01" inputmode="decimal">
         </div>
       </div>
       <div class="tax-note" id="ppSuggestNote">Enter the amount you want to end up with, and this suggests what to invoice or ask the buyer for so PayPal's fee doesn't eat into it. This is independent of the item/shipping amounts above.</div>
@@ -872,7 +900,7 @@
     if(mode === 'us'){
       const stateCode = el('stateSel').value;
       if(!stateCode || !US_STATES[stateCode]){
-        el('taxRate').value = '0';
+        el('taxRate').value = '';
         el('taxNote').innerHTML = `Pick the buyer's state above to auto-fill a tax rate.`;
         el('taxNote').className = 'tax-note zero';
         calc();
@@ -903,7 +931,7 @@
     } else {
       const sel = el('countrySel');
       if(!sel.value){
-        el('taxRate').value = '0';
+        el('taxRate').value = '';
         el('taxNote').innerHTML = `Pick the buyer's country above to auto-fill a rate.`;
         el('taxNote').className = 'tax-note zero';
         calc();
