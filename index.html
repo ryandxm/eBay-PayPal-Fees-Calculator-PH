@@ -5,23 +5,53 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Seller Fee Calculator — eBay &amp; PayPal</title>
 <meta name="description" content="Estimate eBay selling fees and PayPal Goods &amp; Services fees for cross-border sales from the Philippines.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Fee Calc">
+<meta name="theme-color" content="#EAF2F8">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
   :root{
-    --bg: #121214;
-    --panel: #1a1a1d;
-    --panel-2: #202023;
-    --line: #2c2c30;
-    --text: #f0efec;
-    --text-dim: #9a9a9f;
-    --text-faint: #6b6b70;
-    --red: #ff6b5e;
-    --gold: #e8b74b;
-    --gold-dim: #7a6229;
-    --green: #6bbf8a;
-    --blue: #6ea8e8;
+    --bg: #F7F9FB;
+    --panel: #FFFFFF;
+    --panel-2: #F2F5F8;
+    --line: #E4E9EE;
+    --text: #24282F;
+    --text-dim: #6B7280;
+    --text-faint: #9AA3AD;
+    --red: #E2665C;
+    --green: #5CAE8C;
+
+    /* eBay pastel palette */
+    --ebay-accent: #4F8FD1;
+    --ebay-accent-dim: #DCEBFA;
+    --ebay-accent-line: #B9D6F2;
+    --ebay-accent-text: #2E5F94;
+    --ebay-red: #E8927C;
+    --ebay-yellow: #EFC272;
+    --ebay-green: #8FBF8A;
+
+    /* PayPal pastel palette */
+    --pp-accent: #4AA3D8;
+    --pp-accent-dim: #DDF0F8;
+    --pp-accent-line: #B9E0F0;
+    --pp-accent-text: #1F6E96;
+
+    --accent: var(--ebay-accent);
+    --accent-dim: var(--ebay-accent-dim);
+    --accent-line: var(--ebay-accent-line);
+    --accent-text: var(--ebay-accent-text);
   }
+  body.theme-paypal{
+    --accent: var(--pp-accent);
+    --accent-dim: var(--pp-accent-dim);
+    --accent-line: var(--pp-accent-line);
+    --accent-text: var(--pp-accent-text);
+  }
+
   *{box-sizing:border-box;}
   body{
     margin:0;
@@ -29,6 +59,7 @@
     color: var(--text);
     font-family: 'Space Grotesk', sans-serif;
     -webkit-font-smoothing: antialiased;
+    transition: background .2s ease;
   }
   .wrap{
     max-width: 560px;
@@ -42,14 +73,15 @@
     margin-bottom: 20px;
     background: var(--panel);
     border: 1px solid var(--line);
-    border-radius: 12px;
+    border-radius: 14px;
     padding: 5px;
+    box-shadow: 0 1px 2px rgba(20,30,40,0.04);
   }
   .platform-tab{
     flex:1;
     text-align:center;
     padding: 12px 8px;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 13.5px;
     font-weight: 600;
     cursor: pointer;
@@ -57,9 +89,13 @@
     color: var(--text-dim);
     transition: all .15s ease;
   }
-  .platform-tab.active{
-    background: var(--gold);
-    color: #1a1408;
+  .platform-tab.tab-ebay.active{
+    background: var(--ebay-accent-dim);
+    color: var(--ebay-accent-text);
+  }
+  .platform-tab.tab-paypal.active{
+    background: var(--pp-accent-dim);
+    color: var(--pp-accent-text);
   }
 
   .eyebrow{
@@ -67,14 +103,16 @@
     font-size: 11px;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--gold);
+    color: var(--accent);
     margin-bottom: 6px;
+    font-weight: 600;
   }
   h1{
     font-size: 24px;
     font-weight: 700;
     margin: 0 0 4px;
     letter-spacing: -0.01em;
+    color: var(--text);
   }
   .sub{
     color: var(--text-dim);
@@ -86,17 +124,18 @@
   .card{
     background: var(--panel);
     border: 1px solid var(--line);
-    border-radius: 14px;
+    border-radius: 16px;
     padding: 20px;
     margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(20,30,40,0.03);
   }
   .card h2{
     font-size: 12px;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.09em;
     color: var(--text-faint);
     margin: 0 0 16px;
-    font-weight: 600;
+    font-weight: 700;
   }
 
   .field{
@@ -121,12 +160,13 @@
     align-items:center;
     background: var(--panel-2);
     border: 1px solid var(--line);
-    border-radius: 9px;
+    border-radius: 10px;
     padding: 0 12px;
     transition: border-color .15s ease;
   }
   .input-row:focus-within{
-    border-color: var(--gold-dim);
+    border-color: var(--accent);
+    background: var(--panel);
   }
   .input-row .prefix{
     font-family:'IBM Plex Mono', monospace;
@@ -149,12 +189,12 @@
   .input-row select{
     -webkit-appearance: none;
     appearance: none;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0l5 6 5-6z' fill='%239a9a9f'/></svg>");
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0l5 6 5-6z' fill='%239AA3AD'/></svg>");
     background-repeat: no-repeat;
     background-position: right 2px center;
     padding-right: 18px;
   }
-  .input-row select option{ background: var(--panel-2); color: var(--text); }
+  .input-row select option{ background: var(--panel); color: var(--text); }
   .input-row input::-webkit-outer-spin-button,
   .input-row input::-webkit-inner-spin-button{
     -webkit-appearance: none; margin:0;
@@ -175,7 +215,7 @@
     flex:1;
     text-align:center;
     padding: 10px 8px;
-    border-radius: 9px;
+    border-radius: 10px;
     border: 1px solid var(--line);
     background: var(--panel-2);
     color: var(--text-dim);
@@ -186,24 +226,23 @@
     transition: all .15s ease;
   }
   .toggle.active{
-    border-color: var(--gold);
-    color: var(--gold);
-    background: rgba(232,183,75,0.08);
+    border-color: var(--accent);
+    color: var(--accent-text);
+    background: var(--accent-dim);
   }
 
   .tax-note{
     font-size: 11.5px;
-    color: var(--text-faint);
+    color: var(--text-dim);
     line-height: 1.5;
     margin-top: 10px;
     padding: 10px 12px;
     background: var(--panel-2);
-    border-radius: 8px;
-    border-left: 2px solid var(--gold-dim);
+    border-radius: 10px;
+    border-left: 3px solid var(--accent-line);
   }
   .tax-note.zero{ border-left-color: var(--text-faint); }
   .tax-note.precise{ border-left-color: var(--green); }
-  .tax-note.blue{ border-left-color: var(--blue); }
 
   .line{
     display:flex;
@@ -237,15 +276,11 @@
   .line.total .amt{ font-weight: 700; font-size: 15px; }
 
   .payout{
-    background: linear-gradient(180deg, rgba(232,183,75,0.09), rgba(232,183,75,0.02));
-    border: 1px solid var(--gold-dim);
-    border-radius: 14px;
+    background: var(--accent-dim);
+    border: 1px solid var(--accent-line);
+    border-radius: 16px;
     padding: 20px;
     margin-bottom: 16px;
-  }
-  .payout.blue{
-    background: linear-gradient(180deg, rgba(110,168,232,0.09), rgba(110,168,232,0.02));
-    border: 1px solid #3a5a80;
   }
   .payout .row{
     display:flex;
@@ -264,31 +299,30 @@
     color: var(--text);
   }
   .payout .row.hero .k{ font-size: 14px; color: var(--text); font-weight:600; }
-  .payout .row.hero .v{ font-size: 24px; color: var(--gold); font-weight: 700; }
-  .payout.blue .row.hero .v{ color: var(--blue); }
+  .payout .row.hero .v{ font-size: 26px; color: var(--accent-text); font-weight: 700; }
   .payout .note{
     font-size: 11px;
-    color: var(--text-faint);
+    color: var(--text-dim);
     margin-top: 12px;
     line-height: 1.5;
-    border-top: 1px solid var(--line);
+    border-top: 1px solid var(--accent-line);
     padding-top: 12px;
   }
 
   .formula-card summary{
     font-size: 12px;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.09em;
     color: var(--text-faint);
     cursor: pointer;
-    font-weight: 600;
+    font-weight: 700;
     list-style: none;
   }
   .formula-card summary::-webkit-details-marker{ display:none; }
   .formula-card summary::after{
     content: '+';
     float: right;
-    color: var(--gold);
+    color: var(--accent);
     font-family: monospace;
   }
   .formula-card[open] summary::after{ content: '−'; }
@@ -302,9 +336,8 @@
     padding-top: 16px;
     border-top: 1px solid var(--line);
   }
-  .formula-card pre .v{ color: var(--gold); }
-  .formula-card pre .r{ color: var(--red); }
-  .formula-card pre .b{ color: var(--blue); }
+  .formula-card pre .v{ color: var(--accent-text); font-weight:600; }
+  .formula-card pre .r{ color: var(--red); font-weight:600; }
 
   .src{
     font-size: 10.5px;
@@ -316,12 +349,12 @@
   #paypalTab{ display:none; }
 </style>
 </head>
-<body>
+<body class="theme-ebay">
 <div class="wrap">
 
   <div class="platform-tabs">
-    <div class="platform-tab active" id="tabEbayBtn" onclick="switchTab('ebay')">eBay Fees</div>
-    <div class="platform-tab" id="tabPaypalBtn" onclick="switchTab('paypal')">PayPal Fees</div>
+    <div class="platform-tab tab-ebay active" id="tabEbayBtn" onclick="switchTab('ebay')">eBay Fees</div>
+    <div class="platform-tab tab-paypal" id="tabPaypalBtn" onclick="switchTab('paypal')">PayPal Fees</div>
   </div>
 
   <!-- ===================== EBAY TAB ===================== -->
@@ -500,10 +533,17 @@
     <div class="card">
       <h2>Amount &amp; Rate</h2>
       <div class="field">
-        <label>Amount received <span class="hint">USD</span></label>
+        <label>Item cost <span class="hint">USD</span></label>
         <div class="input-row">
           <span class="prefix">$</span>
-          <input type="number" id="ppAmount" value="0" step="0.01" inputmode="decimal">
+          <input type="number" id="ppItemAmount" value="0" step="0.01" inputmode="decimal">
+        </div>
+      </div>
+      <div class="field">
+        <label>Shipping fee <span class="hint">USD, optional — 0 if none</span></label>
+        <div class="input-row">
+          <span class="prefix">$</span>
+          <input type="number" id="ppShipAmount" value="0" step="0.01" inputmode="decimal">
         </div>
       </div>
       <div class="field">
@@ -526,11 +566,19 @@
     <div class="card">
       <h2>Resulting Deductions</h2>
       <div class="line">
-        <div class="label">Amount received</div>
+        <div class="label">Item cost</div>
+        <div class="amt neutral" id="ppOutItem">$0.00</div>
+      </div>
+      <div class="line" id="ppShipLine" style="display:none;">
+        <div class="label">Shipping fee</div>
+        <div class="amt neutral" id="ppOutShip">$0.00</div>
+      </div>
+      <div class="line total">
+        <div class="label">Total amount received</div>
         <div class="amt neutral" id="ppOutGross">$0.00</div>
       </div>
       <div class="line">
-        <div class="label">PayPal fee<span class="desc" id="ppDescFee">amount × 4.40% + $0.30</span></div>
+        <div class="label">PayPal fee<span class="desc" id="ppDescFee">total × 4.40% + $0.30</span></div>
         <div class="amt" id="ppOutFee">$0.00</div>
       </div>
       <div class="line total">
@@ -539,9 +587,9 @@
       </div>
     </div>
 
-    <div class="payout blue">
+    <div class="payout">
       <div class="row">
-        <div class="k">Amount received</div>
+        <div class="k">Total amount received</div>
         <div class="v" id="ppSummaryGross">$0.00</div>
       </div>
       <div class="row">
@@ -563,7 +611,7 @@
           <input type="number" id="ppDesiredNet" value="0" step="0.01" inputmode="decimal">
         </div>
       </div>
-      <div class="tax-note blue" id="ppSuggestNote">Enter the amount you want to end up with, and this suggests what to invoice or ask the buyer for so PayPal's fee doesn't eat into it.</div>
+      <div class="tax-note" id="ppSuggestNote">Enter the amount you want to end up with, and this suggests what to invoice or ask the buyer for so PayPal's fee doesn't eat into it. This is independent of the item/shipping amounts above.</div>
     </div>
 
     <div class="payout" id="ppSuggestBox" style="display:none;">
@@ -600,6 +648,8 @@
     el('tabPaypalBtn').classList.toggle('active', tab === 'paypal');
     el('ebayTab').style.display = tab === 'ebay' ? 'block' : 'none';
     el('paypalTab').style.display = tab === 'paypal' ? 'block' : 'none';
+    document.body.classList.toggle('theme-ebay', tab === 'ebay');
+    document.body.classList.toggle('theme-paypal', tab === 'paypal');
   }
 
   // ============ EBAY LOGIC ============
@@ -901,13 +951,22 @@ Net Payout = (Item + Shipping) − Total Fees
   // ============ PAYPAL LOGIC ============
 
   function calcPayPal(){
-    const gross = parseFloat(el('ppAmount').value) || 0;
+    const item = parseFloat(el('ppItemAmount').value) || 0;
+    const ship = parseFloat(el('ppShipAmount').value) || 0;
+    const gross = round2(item + ship);
     const rate = (parseFloat(el('ppRate').value) || 0) / 100;
     const fixed = parseFloat(el('ppFixed').value) || 0;
 
     const ppFee = round2(gross * rate + fixed);
     const afterFee = round2(gross - ppFee);
 
+    el('ppOutItem').textContent = fmt(item);
+    if(ship > 0){
+      el('ppShipLine').style.display = 'flex';
+      el('ppOutShip').textContent = fmt(ship);
+    } else {
+      el('ppShipLine').style.display = 'none';
+    }
     el('ppOutGross').textContent = fmt(gross);
     el('ppDescFee').textContent = `${gross.toFixed(2)} × ${(rate*100).toFixed(2)}% + ${fixed.toFixed(2)}`;
     el('ppOutFee').textContent = '-' + fmt(ppFee);
@@ -938,11 +997,13 @@ Net Payout = (Item + Shipping) − Total Fees
     el('ppFormulaBlock').innerHTML =
 `Suggested ask = (Desired net + Fixed fee) ÷ (1 − Rate)
               = (${desiredNet.toFixed(2)} + ${fixed.toFixed(2)}) ÷ (1 − ${(rate*100).toFixed(2)}%)
-              = <span class="b">${suggestedAsk.toFixed(2)}</span>
+              = <span class="v">${suggestedAsk.toFixed(2)}</span>
 
 Check:
 PayPal fee    = ${suggestedAsk.toFixed(2)} × ${(rate*100).toFixed(2)}% + ${fixed.toFixed(2)} = <span class="r">${checkFee.toFixed(2)}</span>
-You receive   = ${suggestedAsk.toFixed(2)} − ${checkFee.toFixed(2)} = <span class="v">${checkNet.toFixed(2)}</span>  (matches your desired ${desiredNet.toFixed(2)})`;
+You receive   = ${suggestedAsk.toFixed(2)} − ${checkFee.toFixed(2)} = <span class="v">${checkNet.toFixed(2)}</span>  (matches your desired ${desiredNet.toFixed(2)})
+
+Note: this suggestion is independent of the item/shipping amounts entered above.`;
   }
 
   // ============ INIT ============
@@ -974,7 +1035,7 @@ You receive   = ${suggestedAsk.toFixed(2)} − ${checkFee.toFixed(2)} = <span cl
   setMode('us');
   calc();
 
-  ['ppAmount','ppRate','ppFixed','ppDesiredNet'].forEach(id => {
+  ['ppItemAmount','ppShipAmount','ppRate','ppFixed','ppDesiredNet'].forEach(id => {
     el(id).addEventListener('input', calcPayPal);
   });
   calcPayPal();
