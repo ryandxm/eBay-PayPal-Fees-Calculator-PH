@@ -139,21 +139,55 @@
 
   .theme-toggle-btn{
     position: fixed;
-    top: 16px;
-    right: 16px;
+    top: 0;
+    right: 0;
     z-index: 50;
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
+    height: 34px;
+    min-width: 72px;
+    padding: 0 10px;
+    border-radius: 0 0 0 10px;
     background: var(--panel);
     border: 1px solid var(--line);
-    box-shadow: 0 2px 8px var(--shadow);
-    font-size: 16px;
+    border-top: 0;
+    border-right: 0;
+    box-shadow: none;
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
     cursor: pointer;
     color: var(--text);
+  }
+  .theme-toggle-icon{
+    width: 15px;
+    font-size: 14px;
+    line-height: 1;
+    text-align: center;
+  }
+  .theme-toggle-track{
+    width: 30px;
+    height: 16px;
+    padding: 2px;
+    border-radius: 5px;
+    background: #E9B949;
+    display: flex;
+    align-items: center;
+    transition: background .2s ease;
+  }
+  .theme-toggle-thumb{
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    background: #FFFFFF;
+    transform: translateX(0);
+    transition: transform .2s ease, background .2s ease;
+  }
+  .theme-toggle-btn.is-dark .theme-toggle-track{
+    background: #596270;
+  }
+  .theme-toggle-btn.is-dark .theme-toggle-thumb{
+    background: #202225;
+    transform: translateX(14px);
   }
 
   .platform-tabs{
@@ -188,8 +222,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #FFFFFF;
-    border-radius: 8px;
+    background: transparent;
     padding: 7px 14px;
     width: 100%;
   }
@@ -197,6 +230,11 @@
     height: 20px;
     width: auto;
     display: block;
+    transition: filter .15s ease, opacity .15s ease;
+  }
+  .platform-tab:not(.active) .tab-logo{
+    filter: grayscale(1);
+    opacity: .42;
   }
 
   .eyebrow{
@@ -623,10 +661,14 @@
   }
 
   #ebayTab{ display:none; }
+  .calculation-output[hidden]{ display:none; }
 </style>
 </head>
 <body class="theme-paypal">
-<button type="button" id="themeToggleBtn" class="theme-toggle-btn" aria-label="Toggle dark/light mode">🌙</button>
+<button type="button" id="themeToggleBtn" class="theme-toggle-btn" aria-label="Switch to dark mode" aria-pressed="false" title="Switch to dark mode">
+  <span class="theme-toggle-icon" aria-hidden="true">☀</span>
+  <span class="theme-toggle-track" aria-hidden="true"><span class="theme-toggle-thumb"></span></span>
+</button>
 <div class="wrap">
 
   <div class="platform-tabs">
@@ -771,7 +813,7 @@
       </div>
     </div>
 
-    <div class="card">
+    <div class="card calculation-output" id="ebayResultsCard" hidden>
       <h2>Fee Breakdown</h2>
       <div class="line">
         <div class="label">Buyer tax<span class="desc" id="descTax">(item + shipping) × tax rate</span></div>
@@ -811,7 +853,7 @@
       </div>
     </div>
 
-    <div class="payout">
+    <div class="payout calculation-output" id="ebayPayout" hidden>
       <div class="row">
         <div class="k">Buyer pays</div>
         <div class="v" id="outOrderTotal">$0.00</div>
@@ -831,7 +873,7 @@
       <div class="note">"You actually keep" = item price + shipping, minus eBay's fees. Where tax is collected, eBay remits it to the tax authority as marketplace facilitator — it passes through but isn't yours to keep.</div>
     </div>
 
-    <details class="formula-card card">
+    <details class="formula-card card calculation-output" id="ebayFormulaCard" hidden>
       <summary>Show raw formulas</summary>
       <pre id="formulaBlock"></pre>
     </details>
@@ -846,7 +888,7 @@
 
   <!-- ===================== PAYPAL TAB ===================== -->
   <div id="paypalTab">
-    <div class="eyebrow">Philippines account → International buyer</div>
+    <div class="eyebrow">Philippines → International</div>
     <h1>PayPal Fee Calculator</h1>
     <p class="sub">Estimates PayPal Goods &amp; Services fees for a Philippine account receiving an international payment.</p>
 
@@ -889,7 +931,7 @@
       </div>
     </div>
 
-    <div class="card">
+    <div class="card calculation-output" id="paypalResultsCard" hidden>
       <h2>Resulting Deductions</h2>
       <div class="line">
         <div class="label">Total amount received<span class="desc" id="ppDescGross">item + shipping</span></div>
@@ -901,7 +943,7 @@
       </div>
     </div>
 
-    <div class="payout">
+    <div class="payout calculation-output" id="paypalPayout" hidden>
       <div class="row hero">
         <div class="k">You receive</div>
         <div class="v" id="ppOutAfterFee">$0.00</div>
@@ -953,6 +995,9 @@
   const el = id => document.getElementById(id);
   const fmt = n => (n < 0 ? '-$' : '$') + Math.abs(n).toFixed(2);
   const round2 = n => Math.round((n + Number.EPSILON) * 100) / 100;
+  const setOutputVisibility = (ids, visible) => {
+    ids.forEach(id => { el(id).hidden = !visible; });
+  };
 
   function switchTab(tab){
     el('tabEbayBtn').classList.toggle('active', tab === 'ebay');
@@ -1248,6 +1293,8 @@
   function calc(){
     const P = parseFloat(el('itemPrice').value) || 0;
     const S = parseFloat(el('shipPrice').value) || 0;
+    const hasOrderAmount = P > 0 || S > 0;
+    setOutputVisibility(['ebayResultsCard','ebayPayout','ebayFormulaCard'], hasOrderAmount);
     const taxR = (parseFloat(el('taxRate').value) || 0) / 100;
     const intlR = (parseFloat(el('intlRate').value) || 0) / 100;
     const fixed = parseFloat(el('fixedFee').value) || 0;
@@ -1306,7 +1353,7 @@
     }
 
     const intl = round2(base * intlR);
-    const fixed2 = noPerOrderFee ? 0 : round2(fixed);
+    const fixed2 = (!hasOrderAmount || noPerOrderFee) ? 0 : round2(fixed);
     const promotedRate = promotedOn ? (parseFloat(el('promotedRate').value) || 0) : 0;
     const promotedFee = promotedOn ? round2(base * promotedRate / 100) : 0;
 
@@ -1383,13 +1430,15 @@ Net Payout = (Item + Shipping) − Total Fees
     const item = parseFloat(el('ppItemAmount').value) || 0;
     const ship = parseFloat(el('ppShipAmount').value) || 0;
     const gross = round2(item + ship);
+    const hasPaymentAmount = gross > 0;
+    setOutputVisibility(['paypalResultsCard','paypalPayout'], hasPaymentAmount);
     const fixed = parseFloat(el('ppFixed').value) || 0;
 
     const rate = merchantTierRate(gross) / 100;
     el('ppRate').value = (rate*100).toFixed(2);
 
-    const ppFee = round2(gross * rate + fixed);
-    const afterFee = round2(gross - ppFee);
+    const ppFee = hasPaymentAmount ? round2(gross * rate + fixed) : 0;
+    const afterFee = hasPaymentAmount ? round2(gross - ppFee) : 0;
 
     el('ppDescGross').textContent = ship > 0 ? `${item.toFixed(2)} + ${ship.toFixed(2)}` : `item cost only, no shipping entered`;
     el('ppOutGross').textContent = fmt(gross);
@@ -1540,7 +1589,14 @@ Note: this suggestion looks up its own Merchant Rate tier based on the ask amoun
     root.classList.remove('theme-forced-light','theme-forced-dark');
     if(stored === 'light') root.classList.add('theme-forced-light');
     if(stored === 'dark') root.classList.add('theme-forced-dark');
-    el('themeToggleBtn').textContent = effectiveIsDark() ? '☀️' : '🌙';
+    const isDark = effectiveIsDark();
+    const button = el('themeToggleBtn');
+    const actionLabel = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+    button.classList.toggle('is-dark', isDark);
+    button.querySelector('.theme-toggle-icon').textContent = isDark ? '☾' : '☀';
+    button.setAttribute('aria-label', actionLabel);
+    button.setAttribute('aria-pressed', String(isDark));
+    button.title = actionLabel;
   }
   el('themeToggleBtn').addEventListener('click', (e) => {
     e.stopPropagation();
