@@ -556,17 +556,72 @@
     color: var(--text-faint);
   }
 
-  @media (max-width: 360px){
-    .calculator-shell{ padding: 14px; }
+  @media (max-width: 600px){
+    body.theme-calculator .wrap{
+      padding-top: calc(var(--header-height) + env(safe-area-inset-top) + 14px);
+    }
+    body.theme-calculator .eyebrow{ margin-bottom: 3px; }
+    body.theme-calculator h1{ font-size: 22px; }
+    body.theme-calculator .sub{
+      margin-bottom: 12px;
+      line-height: 1.35;
+    }
+    .calculator-shell{
+      padding: 12px;
+      border-radius: 18px;
+    }
     .calculator-display{
-      min-height: 96px;
-      padding: 15px;
+      min-height: 80px;
+      padding: 12px;
     }
-    .calculator-keypad{ gap: 8px; }
+    .calculator-keypad{
+      gap: 7px;
+      margin-top: 8px;
+    }
     .calculator-key{
-      min-height: 56px;
-      border-radius: 13px;
+      min-height: 48px;
+      border-radius: 12px;
+      font-size: 16px;
     }
+    .calculator-key.operator,
+    .calculator-key.equals{ font-size: 20px; }
+    .calculator-hint{
+      margin-top: 6px;
+      font-size: 9.5px;
+    }
+  }
+
+  @media (max-width: 600px) and (max-height: 740px){
+    body.theme-calculator .wrap{
+      padding-top: calc(var(--header-height) + env(safe-area-inset-top) + 10px);
+    }
+    body.theme-calculator .sub{
+      margin-bottom: 8px;
+      font-size: 12.5px;
+    }
+    .calculator-shell{ padding: 10px; }
+    .calculator-display{
+      min-height: 64px;
+      padding: 9px 11px;
+    }
+    .calculator-expression{ min-height: 14px; }
+    .calculator-result{ font-size: 28px; }
+    .calculator-keypad{
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .calculator-key{
+      min-height: 44px;
+      border-radius: 11px;
+    }
+    .calculator-hint{ display: none; }
+  }
+
+  @media (max-width: 600px) and (max-height: 620px){
+    body.theme-calculator .wrap{
+      padding-top: calc(var(--header-height) + env(safe-area-inset-top) + 8px);
+    }
+    body.theme-calculator .sub{ display: none; }
   }
 
   .card{
