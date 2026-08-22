@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Seller Fee Calculator — eBay &amp; PayPal</title>
 <meta name="description" content="Estimate eBay selling fees and PayPal Goods &amp; Services fees for cross-border sales from the Philippines.">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -17,7 +17,7 @@
 
   :root{
     --header-height: 60px;
-    --bottom-nav-height: 68px;
+    --bottom-nav-height: 82px;
     --bg: #F7F9FB;
     --panel: #FFFFFF;
     --panel-2: #F2F5F8;
@@ -263,8 +263,8 @@
     right: 0;
     bottom: 0;
     z-index: 100;
-    padding: 6px max(22px, env(safe-area-inset-right))
-      calc(6px + env(safe-area-inset-bottom)) max(22px, env(safe-area-inset-left));
+    padding: 8px max(16px, env(safe-area-inset-right))
+      calc(10px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
     background: var(--panel);
     border-top: 1px solid var(--line);
     box-shadow: 0 -3px 14px var(--shadow-strong);
@@ -273,11 +273,11 @@
     display:flex;
     gap:8px;
     width: 100%;
-    max-width: 480px;
+    max-width: 524px;
     margin: 0 auto;
     background: var(--panel-2);
     border: 1px solid var(--line);
-    border-radius: 12px;
+    border-radius: 14px;
     padding: 4px;
   }
   .platform-tab{
@@ -287,10 +287,13 @@
     color: var(--text);
     font: inherit;
     text-align:center;
-    padding: 8px;
-    border-radius: 9px;
+    min-height: 52px;
+    padding: 6px 8px;
+    border-radius: 10px;
     cursor: pointer;
     user-select:none;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
     transition: all .15s ease;
     display: flex;
     align-items: center;
@@ -311,7 +314,7 @@
     width: 100%;
   }
   .tab-logo{
-    height: 18px;
+    height: 20px;
     width: auto;
     display: block;
     transition: filter .15s ease, opacity .15s ease;
