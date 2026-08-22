@@ -45,6 +45,12 @@
     --pp-accent-line: #B9E0F0;
     --pp-accent-text: #1F6E96;
 
+    /* Calculator golden palette */
+    --calc-accent: #F1BE4E;
+    --calc-accent-dim: #FFF3D2;
+    --calc-accent-line: #F0D18A;
+    --calc-accent-text: #93630F;
+
     --accent: var(--ebay-accent);
     --accent-dim: var(--ebay-accent-dim);
     --accent-line: var(--ebay-accent-line);
@@ -60,6 +66,12 @@
     --accent-dim: var(--pp-accent-dim);
     --accent-line: var(--pp-accent-line);
     --accent-text: var(--pp-accent-text);
+  }
+  body.theme-calculator{
+    --accent: var(--calc-accent);
+    --accent-dim: var(--calc-accent-dim);
+    --accent-line: var(--calc-accent-line);
+    --accent-text: var(--calc-accent-text);
   }
 
   /* Dark palette: applies automatically via system Appearance setting,
@@ -88,6 +100,11 @@
     --pp-accent-line: #3D6685;
     --pp-accent-text: #8FD0F5;
 
+    --calc-accent: #F3C75D;
+    --calc-accent-dim: #3B301A;
+    --calc-accent-line: #6D5725;
+    --calc-accent-text: #FFD978;
+
     --warn-text: #E8C97A;
     --warn-bg: #362B14;
     --warn-border: #5C4A20;
@@ -115,6 +132,11 @@
       --pp-accent-dim: #1B2E3C;
       --pp-accent-line: #3D6685;
       --pp-accent-text: #8FD0F5;
+
+      --calc-accent: #F3C75D;
+      --calc-accent-dim: #3B301A;
+      --calc-accent-line: #6D5725;
+      --calc-accent-text: #FFD978;
 
       --warn-text: #E8C97A;
       --warn-bg: #362B14;
@@ -271,6 +293,7 @@
   }
   .platform-tabs{
     display:flex;
+    align-items:center;
     gap:8px;
     width: 100%;
     max-width: 524px;
@@ -282,6 +305,7 @@
   }
   .platform-tab{
     flex:1;
+    position: relative;
     border: 0;
     background: transparent;
     color: var(--text);
@@ -300,13 +324,61 @@
     justify-content: center;
   }
   .platform-tab.tab-ebay.active{
+    --platform-active-fill: var(--ebay-accent-dim);
     background: var(--ebay-accent-dim);
+    border-radius: 0 10px 10px 0;
   }
   .platform-tab.tab-paypal.active{
+    --platform-active-fill: var(--pp-accent-dim);
     background: var(--pp-accent-dim);
+    border-radius: 10px 0 0 10px;
+  }
+  .platform-tab.tab-paypal.active::after,
+  .platform-tab.tab-ebay.active::before{
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 31px;
+    z-index: 0;
+    pointer-events: none;
+    background: var(--platform-active-fill);
+  }
+  .platform-tab.tab-paypal.active::after{
+    right: -31px;
+    -webkit-mask: radial-gradient(circle at 100% 50%, transparent 0 25px, #000 25.5px);
+    mask: radial-gradient(circle at 100% 50%, transparent 0 25px, #000 25.5px);
+  }
+  .platform-tab.tab-ebay.active::before{
+    left: -31px;
+    -webkit-mask: radial-gradient(circle at 0 50%, transparent 0 25px, #000 25.5px);
+    mask: radial-gradient(circle at 0 50%, transparent 0 25px, #000 25.5px);
+  }
+  .platform-tab.tab-calculator.active{
+    background: var(--calc-accent);
+    box-shadow: 0 0 0 2px var(--calc-accent-line);
+  }
+  .platform-tab.tab-calculator{
+    flex: 0 0 46px;
+    width: 46px;
+    height: 46px;
+    min-height: 46px;
+    padding: 0;
+    border: 2px solid var(--panel);
+    border-radius: 50%;
+    background: var(--calc-accent-dim);
+    box-shadow: 0 0 0 1px var(--calc-accent-line);
+    transform: none;
+    z-index: 2;
+  }
+  .platform-tab.tab-calculator .tab-logo-chip{
+    width: auto;
+    padding: 0;
   }
   .tab-logo-chip{
     display: flex;
+    position: relative;
+    z-index: 1;
     align-items: center;
     justify-content: center;
     background: transparent;
@@ -322,6 +394,32 @@
   .platform-tab:not(.active) .tab-logo{
     filter: grayscale(1);
     opacity: .42;
+  }
+  .tab-calculator-logo{
+    width: 28px;
+    height: 28px;
+    display: block;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 0 0 1px var(--line);
+    transition: filter .15s ease, opacity .15s ease, transform .15s ease;
+  }
+  .tab-calculator-logo-dark{ display: none; }
+  :root.theme-forced-dark .tab-calculator-logo-light{ display: none; }
+  :root.theme-forced-dark .tab-calculator-logo-dark{ display: block; }
+  :root.theme-forced-light .tab-calculator-logo-light{ display: block; }
+  :root.theme-forced-light .tab-calculator-logo-dark{ display: none; }
+  @media (prefers-color-scheme: dark){
+    :root:not(.theme-forced-light) .tab-calculator-logo-light{ display: none; }
+    :root:not(.theme-forced-light) .tab-calculator-logo-dark{ display: block; }
+  }
+  .platform-tab:not(.active) .tab-calculator-logo{
+    filter: saturate(.75);
+    opacity: .78;
+  }
+  .platform-tab.tab-calculator.active .tab-calculator-logo{
+    transform: none;
+    box-shadow: 0 0 0 2px rgba(255,255,255,.55);
   }
 
   .eyebrow{
@@ -345,6 +443,130 @@
     font-size: 13.5px;
     margin: 0 0 22px;
     line-height: 1.5;
+  }
+
+  .calculator-shell{
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 18px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    box-shadow: 0 2px 8px var(--shadow);
+  }
+  .calculator-shell:focus-visible{
+    outline: 2px solid var(--accent-line);
+    outline-offset: 3px;
+  }
+  body.theme-calculator .calculator-shell{
+    border-color: var(--calc-accent-line);
+  }
+  .calculator-display{
+    min-height: 112px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-end;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    border-radius: 15px;
+    overflow: hidden;
+  }
+  body.theme-calculator .calculator-display{
+    background: var(--calc-accent-dim);
+    border-color: var(--calc-accent-line);
+  }
+  .calculator-expression{
+    min-height: 18px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text-faint);
+  }
+  .calculator-result{
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: clamp(30px, 9vw, 42px);
+    line-height: 1.15;
+    font-weight: 600;
+    letter-spacing: -.04em;
+    color: var(--text);
+  }
+  .calculator-keypad{
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .calculator-key{
+    min-width: 0;
+    min-height: 62px;
+    border: 1px solid var(--line);
+    border-radius: 15px;
+    background: var(--panel-2);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform .08s ease, border-color .15s ease, background .15s ease;
+  }
+  .calculator-key:hover,
+  .calculator-key:focus-visible{
+    border-color: var(--accent-line);
+    outline: none;
+  }
+  .calculator-key:active{ transform: scale(.96); }
+  .calculator-key.utility{
+    color: var(--text-dim);
+    background: var(--panel);
+  }
+  .calculator-key.operator{
+    color: var(--calc-accent-text);
+    background: var(--calc-accent-dim);
+    border-color: var(--calc-accent-line);
+    font-size: 22px;
+  }
+  .calculator-key.operator.is-active{
+    color: #3B2A09;
+    background: var(--calc-accent);
+  }
+  .calculator-key.equals{
+    color: #3B2A09;
+    background: var(--calc-accent);
+    border-color: var(--calc-accent);
+    font-size: 22px;
+  }
+  .calculator-key.zero{ grid-column: span 2; }
+  .calculator-hint{
+    max-width: 400px;
+    margin: 10px auto 0;
+    text-align: center;
+    font-size: 10.5px;
+    line-height: 1.5;
+    color: var(--text-faint);
+  }
+
+  @media (max-width: 360px){
+    .calculator-shell{ padding: 14px; }
+    .calculator-display{
+      min-height: 96px;
+      padding: 15px;
+    }
+    .calculator-keypad{ gap: 8px; }
+    .calculator-key{
+      min-height: 56px;
+      border-radius: 13px;
+    }
   }
 
   .card{
@@ -798,7 +1020,8 @@
     margin-top: 14px;
   }
 
-  #ebayTab{ display:none; }
+  #ebayTab,
+  #calculatorTab{ display:none; }
   .calculation-output[hidden]{ display:none; }
 </style>
 </head>
@@ -1130,11 +1353,52 @@
     </div>
   </div>
 
+  <!-- ===================== CALCULATOR TAB ===================== -->
+  <div id="calculatorTab" role="tabpanel" aria-labelledby="tabCalculatorBtn">
+    <div class="eyebrow">Quick utility</div>
+    <h1>Calculator</h1>
+    <p class="sub">Basic arithmetic without leaving your seller-fee workspace.</p>
+
+    <div class="calculator-shell" tabindex="0" aria-label="Calculator keypad; keyboard input supported">
+      <div class="calculator-display" aria-live="polite" aria-atomic="true">
+        <div class="calculator-expression" id="calculatorExpression">Ready</div>
+        <output class="calculator-result" id="calculatorDisplay">0</output>
+      </div>
+      <div class="calculator-keypad" id="calculatorKeypad">
+        <button type="button" class="calculator-key utility" data-calc-action="clear">AC</button>
+        <button type="button" class="calculator-key utility" data-calc-action="sign" aria-label="Toggle positive or negative">±</button>
+        <button type="button" class="calculator-key utility" data-calc-action="percent" aria-label="Percent">%</button>
+        <button type="button" class="calculator-key operator" data-calc-operator="divide" aria-label="Divide">÷</button>
+
+        <button type="button" class="calculator-key" data-calc-digit="7">7</button>
+        <button type="button" class="calculator-key" data-calc-digit="8">8</button>
+        <button type="button" class="calculator-key" data-calc-digit="9">9</button>
+        <button type="button" class="calculator-key operator" data-calc-operator="multiply" aria-label="Multiply">×</button>
+
+        <button type="button" class="calculator-key" data-calc-digit="4">4</button>
+        <button type="button" class="calculator-key" data-calc-digit="5">5</button>
+        <button type="button" class="calculator-key" data-calc-digit="6">6</button>
+        <button type="button" class="calculator-key operator" data-calc-operator="subtract" aria-label="Subtract">−</button>
+
+        <button type="button" class="calculator-key" data-calc-digit="1">1</button>
+        <button type="button" class="calculator-key" data-calc-digit="2">2</button>
+        <button type="button" class="calculator-key" data-calc-digit="3">3</button>
+        <button type="button" class="calculator-key operator" data-calc-operator="add" aria-label="Add">+</button>
+
+        <button type="button" class="calculator-key zero" data-calc-digit="0">0</button>
+        <button type="button" class="calculator-key" data-calc-action="decimal" aria-label="Decimal point">.</button>
+        <button type="button" class="calculator-key equals" data-calc-action="equals" aria-label="Equals">=</button>
+      </div>
+    </div>
+    <p class="calculator-hint">Keyboard: numbers, + − × ÷, Enter, Backspace, and Escape.</p>
+  </div>
+
 </div>
 
 <nav class="platform-nav" aria-label="Fee calculator">
   <div class="platform-tabs" role="tablist">
     <button type="button" class="platform-tab tab-paypal active" id="tabPaypalBtn" role="tab" aria-controls="paypalTab" aria-selected="true" onclick="switchTab('paypal')"><span class="tab-logo-chip"><img src="paypal-logo.png" alt="PayPal Fees" class="tab-logo"></span></button>
+    <button type="button" class="platform-tab tab-calculator" id="tabCalculatorBtn" role="tab" aria-label="Calculator" aria-controls="calculatorTab" aria-selected="false" onclick="switchTab('calculator')"><span class="tab-logo-chip"><img src="icon-192.png" alt="" aria-hidden="true" class="tab-calculator-logo tab-calculator-logo-light"><img src="icon-192-dark.png" alt="" aria-hidden="true" class="tab-calculator-logo tab-calculator-logo-dark"></span></button>
     <button type="button" class="platform-tab tab-ebay" id="tabEbayBtn" role="tab" aria-controls="ebayTab" aria-selected="false" onclick="switchTab('ebay')"><span class="tab-logo-chip"><img src="ebay-logo.png" alt="eBay Fees" class="tab-logo"></span></button>
   </div>
 </nav>
@@ -1150,13 +1414,195 @@
   function switchTab(tab){
     el('tabEbayBtn').classList.toggle('active', tab === 'ebay');
     el('tabPaypalBtn').classList.toggle('active', tab === 'paypal');
+    el('tabCalculatorBtn').classList.toggle('active', tab === 'calculator');
     el('tabEbayBtn').setAttribute('aria-selected', String(tab === 'ebay'));
     el('tabPaypalBtn').setAttribute('aria-selected', String(tab === 'paypal'));
+    el('tabCalculatorBtn').setAttribute('aria-selected', String(tab === 'calculator'));
     el('ebayTab').style.display = tab === 'ebay' ? 'block' : 'none';
     el('paypalTab').style.display = tab === 'paypal' ? 'block' : 'none';
+    el('calculatorTab').style.display = tab === 'calculator' ? 'block' : 'none';
     document.body.classList.toggle('theme-ebay', tab === 'ebay');
     document.body.classList.toggle('theme-paypal', tab === 'paypal');
+    document.body.classList.toggle('theme-calculator', tab === 'calculator');
   }
+
+  // ============ CALCULATOR LOGIC ============
+
+  const CALCULATOR_SYMBOLS = {
+    add: '+', subtract: '−', multiply: '×', divide: '÷'
+  };
+  let calculatorCurrent = '0';
+  let calculatorStored = null;
+  let calculatorOperator = null;
+  let calculatorWaitingForOperand = false;
+  let calculatorHasError = false;
+
+  function formatCalculatorNumber(number){
+    if(!Number.isFinite(number)) return null;
+    const rounded = Number.parseFloat(number.toPrecision(12));
+    const plain = String(rounded);
+    return plain.length > 14 ? rounded.toExponential(8) : plain;
+  }
+
+  function renderCalculator(){
+    el('calculatorDisplay').textContent = calculatorCurrent;
+    document.querySelectorAll('[data-calc-operator]').forEach(button => {
+      button.classList.toggle('is-active', button.dataset.calcOperator === calculatorOperator);
+    });
+  }
+
+  function clearCalculator(){
+    calculatorCurrent = '0';
+    calculatorStored = null;
+    calculatorOperator = null;
+    calculatorWaitingForOperand = false;
+    calculatorHasError = false;
+    el('calculatorExpression').textContent = 'Ready';
+    renderCalculator();
+  }
+
+  function inputCalculatorDigit(digit){
+    if(calculatorHasError || calculatorWaitingForOperand){
+      calculatorCurrent = digit;
+      calculatorWaitingForOperand = false;
+      calculatorHasError = false;
+      if(calculatorOperator === null) el('calculatorExpression').textContent = 'Ready';
+    } else if(calculatorCurrent === '0'){
+      calculatorCurrent = digit;
+    } else if(calculatorCurrent.replace(/[-.]/g, '').length < 12){
+      calculatorCurrent += digit;
+    }
+    renderCalculator();
+  }
+
+  function inputCalculatorDecimal(){
+    if(calculatorHasError || calculatorWaitingForOperand){
+      calculatorCurrent = '0.';
+      calculatorWaitingForOperand = false;
+      calculatorHasError = false;
+      if(calculatorOperator === null) el('calculatorExpression').textContent = 'Ready';
+    } else if(!calculatorCurrent.includes('.')){
+      calculatorCurrent += '.';
+    }
+    renderCalculator();
+  }
+
+  function calculateResult(left, right, operator){
+    if(operator === 'add') return left + right;
+    if(operator === 'subtract') return left - right;
+    if(operator === 'multiply') return left * right;
+    if(operator === 'divide') return right === 0 ? null : left / right;
+    return right;
+  }
+
+  function showCalculatorError(message){
+    calculatorCurrent = 'Error';
+    calculatorStored = null;
+    calculatorOperator = null;
+    calculatorWaitingForOperand = true;
+    calculatorHasError = true;
+    el('calculatorExpression').textContent = message;
+    renderCalculator();
+  }
+
+  function chooseCalculatorOperator(nextOperator){
+    if(calculatorHasError) return;
+    const inputValue = Number(calculatorCurrent);
+
+    if(calculatorStored !== null && calculatorOperator && !calculatorWaitingForOperand){
+      const result = calculateResult(calculatorStored, inputValue, calculatorOperator);
+      const formatted = result === null ? null : formatCalculatorNumber(result);
+      if(formatted === null){
+        showCalculatorError('Cannot divide by zero');
+        return;
+      }
+      calculatorStored = Number(formatted);
+      calculatorCurrent = formatted;
+    } else if(calculatorStored === null){
+      calculatorStored = inputValue;
+    }
+
+    calculatorOperator = nextOperator;
+    calculatorWaitingForOperand = true;
+    el('calculatorExpression').textContent = `${formatCalculatorNumber(calculatorStored)} ${CALCULATOR_SYMBOLS[nextOperator]}`;
+    renderCalculator();
+  }
+
+  function finishCalculatorEquation(){
+    if(calculatorHasError || calculatorStored === null || !calculatorOperator) return;
+    const right = Number(calculatorCurrent);
+    const left = calculatorStored;
+    const operator = calculatorOperator;
+    const result = calculateResult(left, right, operator);
+    const formatted = result === null ? null : formatCalculatorNumber(result);
+    if(formatted === null){
+      showCalculatorError('Cannot divide by zero');
+      return;
+    }
+
+    el('calculatorExpression').textContent = `${formatCalculatorNumber(left)} ${CALCULATOR_SYMBOLS[operator]} ${formatCalculatorNumber(right)} =`;
+    calculatorCurrent = formatted;
+    calculatorStored = null;
+    calculatorOperator = null;
+    calculatorWaitingForOperand = true;
+    renderCalculator();
+  }
+
+  function toggleCalculatorSign(){
+    if(calculatorHasError || calculatorCurrent === '0') return;
+    calculatorCurrent = calculatorCurrent.startsWith('-')
+      ? calculatorCurrent.slice(1)
+      : `-${calculatorCurrent}`;
+    renderCalculator();
+  }
+
+  function percentCalculatorValue(){
+    if(calculatorHasError) return;
+    const formatted = formatCalculatorNumber(Number(calculatorCurrent) / 100);
+    if(formatted === null) return;
+    calculatorCurrent = formatted;
+    calculatorWaitingForOperand = false;
+    renderCalculator();
+  }
+
+  function backspaceCalculator(){
+    if(calculatorHasError || calculatorWaitingForOperand) return;
+    calculatorCurrent = calculatorCurrent.length <= 1 ||
+      (calculatorCurrent.startsWith('-') && calculatorCurrent.length === 2)
+      ? '0'
+      : calculatorCurrent.slice(0, -1);
+    renderCalculator();
+  }
+
+  el('calculatorKeypad').addEventListener('click', event => {
+    const button = event.target.closest('.calculator-key');
+    if(!button) return;
+    if(button.dataset.calcDigit !== undefined) inputCalculatorDigit(button.dataset.calcDigit);
+    if(button.dataset.calcOperator) chooseCalculatorOperator(button.dataset.calcOperator);
+    if(button.dataset.calcAction === 'clear') clearCalculator();
+    if(button.dataset.calcAction === 'sign') toggleCalculatorSign();
+    if(button.dataset.calcAction === 'percent') percentCalculatorValue();
+    if(button.dataset.calcAction === 'decimal') inputCalculatorDecimal();
+    if(button.dataset.calcAction === 'equals') finishCalculatorEquation();
+  });
+
+  document.addEventListener('keydown', event => {
+    if(el('calculatorTab').style.display === 'none') return;
+    if(/^\d$/.test(event.key)) inputCalculatorDigit(event.key);
+    else if(event.key === '.') inputCalculatorDecimal();
+    else if(event.key === '+') chooseCalculatorOperator('add');
+    else if(event.key === '-') chooseCalculatorOperator('subtract');
+    else if(event.key === '*') chooseCalculatorOperator('multiply');
+    else if(event.key === '/') chooseCalculatorOperator('divide');
+    else if(event.key === '%') percentCalculatorValue();
+    else if(event.key === 'Enter' || event.key === '=') finishCalculatorEquation();
+    else if(event.key === 'Backspace') backspaceCalculator();
+    else if(event.key === 'Escape' || event.key === 'Delete') clearCalculator();
+    else return;
+    event.preventDefault();
+  });
+
+  clearCalculator();
 
   // ============ EBAY LOGIC ============
 
