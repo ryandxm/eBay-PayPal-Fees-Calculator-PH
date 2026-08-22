@@ -9,17 +9,15 @@
 <meta name="apple-mobile-web-app-title" content="Fee Calc">
 <meta name="theme-color" content="#EAF2F8" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#17181A" media="(prefers-color-scheme: dark)">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="apple-touch-icon" media="(prefers-color-scheme: dark)" href="apple-touch-icon-dark.png">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" media="(prefers-color-scheme: light)">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192-dark.png" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon-dark.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192-dark.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
   :root{
     --header-height: 60px;
-    --bottom-nav-height: 78px;
+    --bottom-nav-height: 68px;
     --bg: #F7F9FB;
     --panel: #FFFFFF;
     --panel-2: #F2F5F8;
@@ -265,8 +263,8 @@
     right: 0;
     bottom: 0;
     z-index: 100;
-    padding: 8px max(18px, env(safe-area-inset-right))
-      calc(8px + env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
+    padding: 6px max(22px, env(safe-area-inset-right))
+      calc(6px + env(safe-area-inset-bottom)) max(22px, env(safe-area-inset-left));
     background: var(--panel);
     border-top: 1px solid var(--line);
     box-shadow: 0 -3px 14px var(--shadow-strong);
@@ -275,12 +273,12 @@
     display:flex;
     gap:8px;
     width: 100%;
-    max-width: 524px;
+    max-width: 480px;
     margin: 0 auto;
     background: var(--panel-2);
     border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 5px;
+    border-radius: 12px;
+    padding: 4px;
   }
   .platform-tab{
     flex:1;
@@ -290,7 +288,7 @@
     font: inherit;
     text-align:center;
     padding: 8px;
-    border-radius: 10px;
+    border-radius: 9px;
     cursor: pointer;
     user-select:none;
     transition: all .15s ease;
@@ -309,11 +307,11 @@
     align-items: center;
     justify-content: center;
     background: transparent;
-    padding: 7px 14px;
+    padding: 5px 12px;
     width: 100%;
   }
   .tab-logo{
-    height: 20px;
+    height: 18px;
     width: auto;
     display: block;
     transition: filter .15s ease, opacity .15s ease;
