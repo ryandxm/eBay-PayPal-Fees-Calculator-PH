@@ -7,9 +7,12 @@
 <meta name="description" content="Estimate eBay selling fees and PayPal Goods &amp; Services fees for cross-border sales from the Philippines.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Fee Calc">
-<meta name="theme-color" content="#EAF2F8">
+<meta name="theme-color" content="#EAF2F8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#17181A" media="(prefers-color-scheme: dark)">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" media="(prefers-color-scheme: dark)" href="apple-touch-icon-dark.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" media="(prefers-color-scheme: light)">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192-dark.png" media="(prefers-color-scheme: dark)">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
@@ -24,6 +27,8 @@
     --text-faint: #9AA3AD;
     --red: #E2665C;
     --green: #5CAE8C;
+    --shadow: rgba(20,30,40,0.03);
+    --shadow-strong: rgba(20,30,40,0.12);
 
     /* eBay pastel palette */
     --ebay-accent: #6FAE8C;
@@ -44,12 +49,48 @@
     --accent-dim: var(--ebay-accent-dim);
     --accent-line: var(--ebay-accent-line);
     --accent-text: var(--ebay-accent-text);
+
+    /* Warning / disclaimer palette */
+    --warn-text: #8A6A2E;
+    --warn-bg: #FBF1DC;
+    --warn-border: #EFDBAA;
   }
   body.theme-paypal{
     --accent: var(--pp-accent);
     --accent-dim: var(--pp-accent-dim);
     --accent-line: var(--pp-accent-line);
     --accent-text: var(--pp-accent-text);
+  }
+
+  /* Auto dark mode, following the iPhone system appearance setting */
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg: #17181A;
+      --panel: #202225;
+      --panel-2: #292B2F;
+      --line: #37393E;
+      --text: #EDEEF0;
+      --text-dim: #A7ADB5;
+      --text-faint: #797F87;
+      --red: #FF8A7E;
+      --green: #7DCC9E;
+      --shadow: rgba(0,0,0,0.25);
+      --shadow-strong: rgba(0,0,0,0.45);
+
+      --ebay-accent: #7FCB9E;
+      --ebay-accent-dim: #1E3327;
+      --ebay-accent-line: #3D6E51;
+      --ebay-accent-text: #93DDB2;
+
+      --pp-accent: #6FBBEC;
+      --pp-accent-dim: #1B2E3C;
+      --pp-accent-line: #3D6685;
+      --pp-accent-text: #8FD0F5;
+
+      --warn-text: #E8C97A;
+      --warn-bg: #362B14;
+      --warn-border: #5C4A20;
+    }
   }
 
   *{box-sizing:border-box;}
@@ -75,7 +116,7 @@
     border: 1px solid var(--line);
     border-radius: 14px;
     padding: 5px;
-    box-shadow: 0 1px 2px rgba(20,30,40,0.04);
+    box-shadow: 0 1px 2px var(--shadow);
   }
   .platform-tab{
     flex:1;
@@ -127,7 +168,7 @@
     border-radius: 16px;
     padding: 20px;
     margin-bottom: 16px;
-    box-shadow: 0 1px 3px rgba(20,30,40,0.03);
+    box-shadow: 0 1px 3px var(--shadow);
   }
   .card h2{
     font-size: 12px;
@@ -248,16 +289,42 @@
   .tax-note.zero{ border-left-color: var(--text-faint); }
   .tax-note.precise{ border-left-color: var(--green); }
 
-  .bottom-banner{
+  .title-with-info{
+    position: relative;
+    display: inline-block;
+  }
+  .sup-info-btn{
+    display: inline-block;
+    vertical-align: super;
+    font-size: 11px;
+    line-height: 1;
+    margin-left: 3px;
+    padding: 2px 4px;
+    color: var(--accent-text);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .floating-note{
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 6px;
+    width: 280px;
+    max-width: 82vw;
+    z-index: 30;
     font-size: 11.5px;
     line-height: 1.5;
-    color: #8A6A2E;
-    background: #FBF1DC;
-    border: 1px solid #EFDBAA;
+    color: var(--warn-text);
+    background: var(--warn-bg);
+    border: 1px solid var(--warn-border);
     border-radius: 12px;
-    padding: 11px 14px;
-    margin-bottom: 16px;
+    padding: 12px 14px;
+    box-shadow: 0 6px 18px var(--shadow-strong);
   }
+  .floating-note.open{ display: block; }
 
   .info-toggle{
     margin-top: 10px;
@@ -369,6 +436,77 @@
     padding-top: 12px;
   }
 
+  .more-options{
+    margin-top: 16px;
+    border-top: 1px solid var(--line);
+    padding-top: 14px;
+  }
+  .more-options summary{
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-dim);
+    cursor: pointer;
+    user-select: none;
+  }
+  .more-options summary::-webkit-details-marker{ display:none; }
+  .more-options summary::after{
+    content: '▾';
+    margin-left: auto;
+    color: var(--accent-text);
+    font-size: 11px;
+  }
+  .more-options[open] summary::after{ content: '▴'; }
+  .mo-badge{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--accent-text);
+    background: var(--accent-dim);
+    border-radius: 999px;
+    padding: 2px 8px;
+  }
+  .mo-badge:empty{ display: none; }
+  .mo-body{
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .mo-body .field label{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .mo-body .field label .hint{
+    margin-left: auto;
+  }
+  .mo-body input[type="checkbox"],
+  .mo-body input[type="radio"]{
+    width: 17px;
+    height: 17px;
+    accent-color: var(--accent);
+    flex-shrink: 0;
+  }
+  .mo-radio-label{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text);
+    cursor: pointer;
+    margin-bottom: 8px;
+  }
+  .mo-radio-label:last-child{ margin-bottom: 0; }
+  .mo-radio-label .hint{ margin-left: auto; }
+
   .formula-card summary{
     font-size: 12px;
     text-transform: uppercase;
@@ -420,7 +558,9 @@
   <!-- ===================== EBAY TAB ===================== -->
   <div id="ebayTab">
     <div class="eyebrow">Philippines → International</div>
-    <h1>eBay Fee Calculator</h1>
+    <h1>eBay Fee Calculator<span class="title-with-info"><button type="button" class="sup-info-btn" id="ebayInfoBtn" aria-label="Important disclaimer">ⓘ</button><div class="floating-note" id="ebayFloatingNote">
+      <strong>Early demo, not an official tool.</strong> Sales tax figures are best-effort estimates — there's no single public record of exact rates for every U.S. state, city, and product category, and eBay itself calculates the real rate live from the buyer's address at checkout. Use this to gauge the ballpark before accepting an offer, not as a guaranteed final number.
+    </div></span></h1>
     <p class="sub">Estimates eBay's Final Value Fee, buyer tax, and Philippines VAT on fees for a cross-border eBay sale.</p>
 
     <div class="card">
@@ -465,10 +605,7 @@
           <span class="suffix">%</span>
         </div>
       </div>
-      <details class="info-toggle">
-        <summary>About this rate</summary>
-        <div class="info-body" id="taxNote">Pick the buyer's state or country above to auto-fill a tax rate.</div>
-      </details>
+      <div id="taxNote" style="display:none;"></div>
     </div>
 
     <div class="card">
@@ -487,12 +624,18 @@
           <input type="number" id="shipPrice" value="" placeholder="0" step="0.01" inputmode="decimal">
         </div>
       </div>
+      <div class="field">
+        <label>Category <span class="hint">drives the FVF rate below</span></label>
+        <div class="input-row">
+          <select id="categorySel"></select>
+        </div>
+      </div>
     </div>
 
     <div class="card">
       <h2>eBay Fee Rates</h2>
       <div class="field">
-        <label>Final Value Fee (category rate) <span class="hint">% of order total</span></label>
+        <label>Final Value Fee <span class="hint" id="fvfHint">% of order total</span></label>
         <div class="input-row">
           <input type="number" id="fvfRate" value="13.6" step="0.01" inputmode="decimal">
           <span class="suffix">%</span>
@@ -519,6 +662,36 @@
           <span class="suffix">%</span>
         </div>
       </div>
+
+      <details class="more-options" id="moreOptionsDetails">
+        <summary>More options <span class="mo-badge" id="moBadge"></span></summary>
+        <div class="mo-body">
+          <div class="field">
+            <label><input type="checkbox" id="optStore" class="mo-check"> eBay Store (Basic or higher)<span class="hint">−0.9pp on most categories</span></label>
+          </div>
+          <div class="field">
+            <label class="mo-radio-label"><input type="radio" name="sellerStatus" id="statusStandard" value="standard" checked> Standard / Above Standard</label>
+            <label class="mo-radio-label"><input type="radio" name="sellerStatus" id="statusTRS" value="trs"> Top Rated Seller (Top Rated Plus)<span class="hint">−10% of FVF</span></label>
+            <label class="mo-radio-label"><input type="radio" name="sellerStatus" id="statusBelow" value="below"> Below Standard<span class="hint">+6pp</span></label>
+          </div>
+          <div class="field">
+            <label><input type="checkbox" id="optINAD" class="mo-check"> "Very High" INAD rate in this category<span class="hint">+5pp</span></label>
+          </div>
+          <div class="field">
+            <label><input type="checkbox" id="optPromoted" class="mo-check"> Using Promoted Listings (standard/general campaign)</label>
+          </div>
+          <div class="field" id="promotedRateField" style="display:none;">
+            <label>Ad rate <span class="hint">2%–100%, you set this per listing</span></label>
+            <div class="input-row">
+              <input type="number" id="promotedRate" value="5" step="0.1" min="2" max="100" inputmode="decimal">
+              <span class="suffix">%</span>
+            </div>
+          </div>
+          <div class="info-body" style="margin-top:4px;">
+            Category rates and modifiers are sourced from eBay's official Seller Fees page. Store discount is applied as a flat −0.9 percentage points across categories as an approximation — eBay's real per-category Store discount ranges 0.4–0.9pp. Below Standard and Very High INAD are mutually additive with Store, but Below Standard and Top Rated Seller can't both apply (Below Standard status excludes Top Rated eligibility).
+          </div>
+        </div>
+      </details>
     </div>
 
     <div class="card">
@@ -542,6 +715,10 @@
       <div class="line">
         <div class="label">Per-order fixed fee<span class="desc">flat charge, once per order</span></div>
         <div class="amt" id="outFixed">$0.00</div>
+      </div>
+      <div class="line" id="promotedLine" style="display:none;">
+        <div class="label">Promoted Listings ad fee<span class="desc" id="descPromoted">base × ad rate%</span></div>
+        <div class="amt" id="outPromoted">$0.00</div>
       </div>
       <div class="line total">
         <div class="label">Fees before VAT</div>
@@ -581,10 +758,6 @@
       <summary>Show raw formulas</summary>
       <pre id="formulaBlock"></pre>
     </details>
-
-    <div class="bottom-banner">
-      ⚠️ Early demo — sales tax figures are best-effort estimates, not official data. Use at your own discretion.
-    </div>
 
     <details class="info-toggle">
       <summary>Sources &amp; methodology</summary>
@@ -809,6 +982,58 @@
     return null;
   }
 
+  // Category-specific Final Value Fee tiers, sourced from eBay's official
+  // Seller Fees page. Each tier is [threshold, rate%] — rate applies to the
+  // portion of the sale up to that cumulative threshold; last tier uses Infinity.
+  const CATEGORIES = {
+    standard:      { name: "Most categories (Electronics, Clothing, Home & Garden, Toys, etc.)", tiers: [[7500,13.6],[Infinity,2.35]] },
+    media:         { name: "Books, Magazines, Movies & TV, Music (except Vinyl)",                tiers: [[7500,15.3],[Infinity,2.35]] },
+    coins:         { name: "Coins & Paper Money (except Bullion)",                               tiers: [[7500,13.25],[Infinity,2.35]] },
+    bullion:       { name: "Coins & Paper Money — Bullion",                                      tiers: [[7500,13.6],[Infinity,7]] },
+    handbags:      { name: "Women's Bags & Handbags",                                            tiers: [[2000,15],[Infinity,9]] },
+    collectibles:  { name: "Trading Cards & Collectible Card Games",                             tiers: [[7500,13.25],[Infinity,2.35]] },
+    jewelry:       { name: "Jewelry & Watches (except Watch Parts & Accessories)",                tiers: [[5000,15],[Infinity,9]] },
+    watches:       { name: "Watches, Parts & Accessories",                                       tiers: [[1000,15],[7500,6.5],[Infinity,3]] },
+    nft:           { name: "NFTs",                                                               tiers: [[Infinity,5]] },
+    bizIndustrial: { name: "Heavy Equipment / Commercial Printing / Food Trucks",                 tiers: [[15000,3],[Infinity,0.5]] },
+    guitars:       { name: "Musical Instruments — Guitars & Basses",                              tiers: [[7500,6.7],[Infinity,2.35]] },
+    sneakers:      { name: "Athletic Shoes (Men's & Women's)", special: 'sneakers' }
+  };
+
+  function tieredFee(base, tiers, modPP){
+    let remaining = base;
+    let prevThreshold = 0;
+    let fee = 0;
+    const parts = [];
+    for(const [threshold, rate] of tiers){
+      const tierRate = Math.max(0, rate + modPP);
+      const span = threshold - prevThreshold;
+      const portion = Math.min(remaining, span);
+      if(portion > 0){
+        const tierFee = portion * tierRate / 100;
+        fee += tierFee;
+        parts.push(`${portion.toFixed(2)}×${tierRate.toFixed(2)}%`);
+      }
+      remaining -= portion;
+      prevThreshold = threshold;
+      if(remaining <= 0) break;
+    }
+    return { fee: round2(fee), desc: parts.join(' + ') || '0.00' };
+  }
+
+  function populateCategories(){
+    const sel = el('categorySel');
+    const custom = document.createElement('option');
+    custom.value = 'custom'; custom.textContent = 'Custom / enter rate manually';
+    sel.appendChild(custom);
+    Object.keys(CATEGORIES).forEach(code => {
+      const o = document.createElement('option');
+      o.value = code; o.textContent = CATEGORIES[code].name;
+      sel.appendChild(o);
+    });
+    sel.value = 'custom';
+  }
+
   let mode = 'us';
 
   function populateStates(){
@@ -950,30 +1175,89 @@
     const P = parseFloat(el('itemPrice').value) || 0;
     const S = parseFloat(el('shipPrice').value) || 0;
     const taxR = (parseFloat(el('taxRate').value) || 0) / 100;
-    const fvfR = (parseFloat(el('fvfRate').value) || 0) / 100;
     const intlR = (parseFloat(el('intlRate').value) || 0) / 100;
     const fixed = parseFloat(el('fixedFee').value) || 0;
     const vatR = (parseFloat(el('vatRate').value) || 0) / 100;
 
     const taxAmt = round2((P + S) * taxR);
     const base = round2(P + S + taxAmt);
-    const fvf = round2(base * fvfR);
+
+    // Modifiers
+    const storeOn = el('optStore').checked;
+    const sellerStatus = document.querySelector('input[name="sellerStatus"]:checked').value;
+    const inadOn = el('optINAD').checked;
+    const promotedOn = el('optPromoted').checked;
+    let modPP = 0;
+    if(storeOn) modPP -= 0.9;
+    if(sellerStatus === 'below') modPP += 6;
+    if(inadOn) modPP += 5;
+
+    const catCode = el('categorySel').value;
+    let fvf, fvfDesc, noPerOrderFee = false;
+
+    if(catCode && catCode !== 'custom' && CATEGORIES[catCode]){
+      const cat = CATEGORIES[catCode];
+      if(cat.special === 'sneakers'){
+        if(base >= 150){
+          const r = Math.max(0, 8 + modPP);
+          fvf = round2(base * r / 100);
+          fvfDesc = `${base.toFixed(2)} × ${r.toFixed(2)}% (≥$150 tier, no per-order fee)`;
+          noPerOrderFee = true;
+        } else {
+          const r = Math.max(0, 13.6 + modPP);
+          fvf = round2(base * r / 100);
+          fvfDesc = `${base.toFixed(2)} × ${r.toFixed(2)}% (<$150 tier)`;
+        }
+      } else {
+        const res = tieredFee(base, cat.tiers, modPP);
+        fvf = res.fee;
+        fvfDesc = res.desc;
+      }
+      if(sellerStatus === 'trs'){
+        const preTRS = fvf;
+        fvf = round2(fvf * 0.9);
+        fvfDesc += ` → ×90% (Top Rated Seller): ${preTRS.toFixed(2)} → ${fvf.toFixed(2)}`;
+      }
+      el('fvfRate').value = base > 0 ? (fvf / base * 100).toFixed(2) : '0.00';
+      el('fvfRate').readOnly = true;
+    } else {
+      const fvfR = (parseFloat(el('fvfRate').value) || 0) / 100;
+      fvf = round2(base * fvfR);
+      fvfDesc = `base × ${(fvfR*100).toFixed(2)}%`;
+      el('fvfRate').readOnly = false;
+    }
+
     const intl = round2(base * intlR);
-    const fixed2 = round2(fixed);
-    const preVat = round2(fvf + intl + fixed2);
+    const fixed2 = noPerOrderFee ? 0 : round2(fixed);
+    const promotedRate = promotedOn ? (parseFloat(el('promotedRate').value) || 0) : 0;
+    const promotedFee = promotedOn ? round2(base * promotedRate / 100) : 0;
+
+    const preVat = round2(fvf + intl + fixed2 + promotedFee);
     const vat = round2(preVat * vatR);
     const totalFees = round2(preVat + vat);
     const orderTotal = base;
     const net = round2((P + S) - totalFees);
 
+    // Modifier badge on "More options"
+    const activeMods = [];
+    if(storeOn) activeMods.push('Store');
+    if(sellerStatus === 'trs') activeMods.push('TRS');
+    if(sellerStatus === 'below') activeMods.push('Below Std');
+    if(inadOn) activeMods.push('INAD');
+    if(promotedOn) activeMods.push('Ads');
+    el('moBadge').textContent = activeMods.length ? activeMods.join(' · ') : '';
+
     el('descTax').textContent = `(${P.toFixed(2)} + ${S.toFixed(2)}) × ${(taxR*100).toFixed(3)}%`;
     el('outTaxAmt').textContent = fmt(taxAmt);
     el('outBase').textContent = fmt(base);
-    el('descFVF').textContent = `base × ${(fvfR*100).toFixed(2)}%`;
+    el('descFVF').textContent = fvfDesc;
     el('outFVF').textContent = '-' + fmt(fvf);
     el('descIntl').textContent = `base × ${(intlR*100).toFixed(2)}%`;
     el('outIntl').textContent = '-' + fmt(intl);
-    el('outFixed').textContent = '-' + fmt(fixed2);
+    el('outFixed').textContent = noPerOrderFee ? 'waived' : '-' + fmt(fixed2);
+    el('promotedLine').style.display = promotedOn ? 'flex' : 'none';
+    el('descPromoted').textContent = `base × ${promotedRate.toFixed(1)}%`;
+    el('outPromoted').textContent = '-' + fmt(promotedFee);
     el('outPreVat').textContent = '-' + fmt(preVat);
     el('descVat').textContent = `fees × ${(vatR*100).toFixed(2)}%`;
     el('outVat').textContent = '-' + fmt(vat);
@@ -991,16 +1275,19 @@
 Base       = Item + Shipping + Tax
            = ${P.toFixed(2)} + ${S.toFixed(2)} + ${taxAmt.toFixed(2)} = <span class="v">${base.toFixed(2)}</span>
 
-FVF        = Base × FVF%
-           = ${base.toFixed(2)} × ${(fvfR*100).toFixed(2)}% = <span class="r">${fvf.toFixed(2)}</span>
+FVF        = ${fvfDesc}
+           = <span class="r">${fvf.toFixed(2)}</span>
 
 Intl Fee   = Base × Intl%
            = ${base.toFixed(2)} × ${(intlR*100).toFixed(2)}% = <span class="r">${intl.toFixed(2)}</span>
 
-Fixed Fee  = <span class="r">${fixed2.toFixed(2)}</span>  (flat, order > $10.01)
-
-Fees(preVAT) = FVF + IntlFee + FixedFee
-           = ${fvf.toFixed(2)} + ${intl.toFixed(2)} + ${fixed2.toFixed(2)} = <span class="r">${preVat.toFixed(2)}</span>
+Fixed Fee  = <span class="r">${fixed2.toFixed(2)}</span>${noPerOrderFee ? ' (waived — sneaker ≥$150 rule)' : '  (flat, order > $10.01)'}
+${promotedOn ? `
+Promoted Ad Fee = Base × Ad Rate%
+           = ${base.toFixed(2)} × ${promotedRate.toFixed(1)}% = <span class="r">${promotedFee.toFixed(2)}</span>
+` : ''}
+Fees(preVAT) = FVF + IntlFee + FixedFee${promotedOn ? ' + AdFee' : ''}
+           = ${fvf.toFixed(2)} + ${intl.toFixed(2)} + ${fixed2.toFixed(2)}${promotedOn ? ` + ${promotedFee.toFixed(2)}` : ''} = <span class="r">${preVat.toFixed(2)}</span>
 
 VAT        = Fees(preVAT) × VAT%
            = ${preVat.toFixed(2)} × ${(vatR*100).toFixed(2)}% = <span class="r">${vat.toFixed(2)}</span>
@@ -1087,6 +1374,7 @@ Note: this suggestion looks up its own Merchant Rate tier based on the ask amoun
 
   populateStates();
   populateCountries();
+  populateCategories();
   el('stateSel').addEventListener('change', () => { populateCities(); onLocationChange(); });
   el('citySel').addEventListener('change', onLocationChange);
   el('countrySel').addEventListener('change', onLocationChange);
@@ -1109,6 +1397,15 @@ Note: this suggestion looks up its own Merchant Rate tier based on the ask amoun
   ['taxRate','itemPrice','shipPrice','fvfRate','intlRate','fixedFee','vatRate'].forEach(id => {
     el(id).addEventListener('input', calc);
   });
+  el('categorySel').addEventListener('change', calc);
+  el('optStore').addEventListener('change', calc);
+  el('optINAD').addEventListener('change', calc);
+  document.querySelectorAll('input[name="sellerStatus"]').forEach(r => r.addEventListener('change', calc));
+  el('optPromoted').addEventListener('change', () => {
+    el('promotedRateField').style.display = el('optPromoted').checked ? 'block' : 'none';
+    calc();
+  });
+  el('promotedRate').addEventListener('input', calc);
   setMode('us');
   calc();
 
@@ -1118,6 +1415,16 @@ Note: this suggestion looks up its own Merchant Rate tier based on the ask amoun
   calcPayPal();
 
   switchTab('paypal');
+
+  // Floating disclaimer: click icon to open, click anywhere else to close.
+  el('ebayInfoBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    el('ebayFloatingNote').classList.toggle('open');
+  });
+  el('ebayFloatingNote').addEventListener('click', (e) => e.stopPropagation());
+  document.addEventListener('click', () => {
+    el('ebayFloatingNote').classList.remove('open');
+  });
 </script>
 </body>
 </html>
