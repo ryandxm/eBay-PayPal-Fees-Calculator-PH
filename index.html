@@ -178,6 +178,13 @@
     margin: 0 0 16px;
     font-weight: 700;
   }
+  .card h2.h2-emphasis{
+    font-size: 15px;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--text);
+    font-weight: 700;
+  }
 
   .field{
     margin-bottom: 16px;
@@ -446,7 +453,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 12.5px;
+    font-size: 12px;
     font-weight: 600;
     color: var(--text-dim);
     cursor: pointer;
@@ -457,12 +464,13 @@
     content: '▾';
     margin-left: auto;
     color: var(--accent-text);
-    font-size: 11px;
+    font-size: 10px;
   }
   .more-options[open] summary::after{ content: '▴'; }
   .mo-badge{
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
+    font-size: 9.5px;
+    font-weight: 600;
     color: var(--accent-text);
     background: var(--accent-dim);
     border-radius: 999px;
@@ -470,42 +478,52 @@
   }
   .mo-badge:empty{ display: none; }
   .mo-body{
-    margin-top: 14px;
+    margin-top: 12px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
   }
-  .mo-body .field label{
+  .mo-group{
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 4px 12px;
+  }
+  .mo-check-row{
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    gap: 8px;
-    font-size: 13px;
-    color: var(--text);
+    gap: 9px;
+    padding: 9px 0;
     cursor: pointer;
+    border-bottom: 1px solid var(--line);
   }
-  .mo-body .field label .hint{
-    margin-left: auto;
-  }
-  .mo-body input[type="checkbox"],
-  .mo-body input[type="radio"]{
-    width: 17px;
-    height: 17px;
+  .mo-check-row:last-child{ border-bottom: none; }
+  .mo-check-row input[type="checkbox"],
+  .mo-check-row input[type="radio"]{
+    width: 16px;
+    height: 16px;
     accent-color: var(--accent);
     flex-shrink: 0;
+    margin: 0;
   }
-  .mo-radio-label{
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 8px;
-    font-size: 13px;
+  .mo-check-text{
+    font-size: 12.5px;
     color: var(--text);
-    cursor: pointer;
-    margin-bottom: 8px;
+    line-height: 1.3;
   }
-  .mo-radio-label:last-child{ margin-bottom: 0; }
-  .mo-radio-label .hint{ margin-left: auto; }
+  .mo-tag{
+    margin-left: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--text-faint);
+    white-space: nowrap;
+  }
+  .mo-footnote{
+    font-size: 10.5px;
+    line-height: 1.5;
+    color: var(--text-faint);
+    margin: 2px 2px 0;
+  }
 
   .formula-card summary{
     font-size: 12px;
@@ -558,7 +576,7 @@
   <!-- ===================== EBAY TAB ===================== -->
   <div id="ebayTab">
     <div class="eyebrow">Philippines → International</div>
-    <h1>eBay Fee Calculator<span class="title-with-info"><button type="button" class="sup-info-btn" id="ebayInfoBtn" aria-label="Important disclaimer">ⓘ</button><div class="floating-note" id="ebayFloatingNote">
+    <h1>eBay Fee Calculator<span class="title-with-info"><button type="button" class="sup-info-btn" data-target="ebayFloatingNote" aria-label="Important disclaimer">ⓘ</button><div class="floating-note" id="ebayFloatingNote">
       <strong>Early demo, not an official tool.</strong> Sales tax figures are best-effort estimates — there's no single public record of exact rates for every U.S. state, city, and product category, and eBay itself calculates the real rate live from the buyer's address at checkout. Use this to gauge the ballpark before accepting an offer, not as a guaranteed final number.
     </div></span></h1>
     <p class="sub">Estimates eBay's Final Value Fee, buyer tax, and Philippines VAT on fees for a cross-border eBay sale.</p>
@@ -630,6 +648,34 @@
           <select id="categorySel"></select>
         </div>
       </div>
+
+      <details class="more-options" id="moreOptionsDetails">
+        <summary>More options <span class="mo-badge" id="moBadge"></span></summary>
+        <div class="mo-body">
+          <div class="mo-group">
+            <label class="mo-check-row"><input type="checkbox" id="optStore"> <span class="mo-check-text">eBay Store (Basic or higher)</span><span class="mo-tag">−0.9pp</span></label>
+          </div>
+          <div class="mo-group">
+            <label class="mo-check-row"><input type="radio" name="sellerStatus" id="statusStandard" value="standard" checked> <span class="mo-check-text">Standard / Above Standard</span></label>
+            <label class="mo-check-row"><input type="radio" name="sellerStatus" id="statusTRS" value="trs"> <span class="mo-check-text">Top Rated Seller</span><span class="mo-tag">−10%</span></label>
+            <label class="mo-check-row"><input type="radio" name="sellerStatus" id="statusBelow" value="below"> <span class="mo-check-text">Below Standard</span><span class="mo-tag">+6pp</span></label>
+          </div>
+          <div class="mo-group">
+            <label class="mo-check-row"><input type="checkbox" id="optINAD"> <span class="mo-check-text">"Very High" INAD rate</span><span class="mo-tag">+5pp</span></label>
+          </div>
+          <div class="mo-group">
+            <label class="mo-check-row"><input type="checkbox" id="optPromoted"> <span class="mo-check-text">Using Promoted Listings</span></label>
+            <div class="field" id="promotedRateField" style="display:none; margin-top:10px;">
+              <label>Ad rate <span class="hint">2%–100%, you set this per listing</span></label>
+              <div class="input-row">
+                <input type="number" id="promotedRate" value="5" step="0.1" min="2" max="100" inputmode="decimal">
+                <span class="suffix">%</span>
+              </div>
+            </div>
+          </div>
+          <p class="mo-footnote">Category rates and modifiers are sourced from eBay's official Seller Fees page. Store discount is applied as a flat −0.9 percentage points as an approximation — eBay's real per-category Store discount ranges 0.4–0.9pp. Below Standard and Top Rated Seller can't both apply.</p>
+        </div>
+      </details>
     </div>
 
     <div class="card">
@@ -662,36 +708,6 @@
           <span class="suffix">%</span>
         </div>
       </div>
-
-      <details class="more-options" id="moreOptionsDetails">
-        <summary>More options <span class="mo-badge" id="moBadge"></span></summary>
-        <div class="mo-body">
-          <div class="field">
-            <label><input type="checkbox" id="optStore" class="mo-check"> eBay Store (Basic or higher)<span class="hint">−0.9pp on most categories</span></label>
-          </div>
-          <div class="field">
-            <label class="mo-radio-label"><input type="radio" name="sellerStatus" id="statusStandard" value="standard" checked> Standard / Above Standard</label>
-            <label class="mo-radio-label"><input type="radio" name="sellerStatus" id="statusTRS" value="trs"> Top Rated Seller (Top Rated Plus)<span class="hint">−10% of FVF</span></label>
-            <label class="mo-radio-label"><input type="radio" name="sellerStatus" id="statusBelow" value="below"> Below Standard<span class="hint">+6pp</span></label>
-          </div>
-          <div class="field">
-            <label><input type="checkbox" id="optINAD" class="mo-check"> "Very High" INAD rate in this category<span class="hint">+5pp</span></label>
-          </div>
-          <div class="field">
-            <label><input type="checkbox" id="optPromoted" class="mo-check"> Using Promoted Listings (standard/general campaign)</label>
-          </div>
-          <div class="field" id="promotedRateField" style="display:none;">
-            <label>Ad rate <span class="hint">2%–100%, you set this per listing</span></label>
-            <div class="input-row">
-              <input type="number" id="promotedRate" value="5" step="0.1" min="2" max="100" inputmode="decimal">
-              <span class="suffix">%</span>
-            </div>
-          </div>
-          <div class="info-body" style="margin-top:4px;">
-            Category rates and modifiers are sourced from eBay's official Seller Fees page. Store discount is applied as a flat −0.9 percentage points across categories as an approximation — eBay's real per-category Store discount ranges 0.4–0.9pp. Below Standard and Very High INAD are mutually additive with Store, but Below Standard and Top Rated Seller can't both apply (Below Standard status excludes Top Rated eligibility).
-          </div>
-        </div>
-      </details>
     </div>
 
     <div class="card">
@@ -774,7 +790,14 @@
     <p class="sub">Estimates PayPal Goods &amp; Services fees for a Philippine account receiving an international payment.</p>
 
     <div class="card">
-      <h2>Amount &amp; Rate</h2>
+      <h2 class="h2-emphasis">Amount &amp; Rate<span class="title-with-info"><button type="button" class="sup-info-btn" data-target="ppTierNote" aria-label="About Merchant Rate tiers">ⓘ</button><div class="floating-note" id="ppTierNote">
+        <strong>Merchant Rate tiers</strong> — requires PayPal application/approval and qualifying monthly volume:<br>
+        Up to $3,000 — 4.4%<br>
+        $3,000.01–$10,000 — 3.9%<br>
+        $10,000.01–$100,000 — 3.7%<br>
+        Above $100,000.01 — 3.4%<br><br>
+        Tier is looked up using the total amount received below, as a stand-in for monthly volume — PayPal actually bases this on your previous calendar month's total. The rate field is auto-filled but editable if you know your actual approved rate.
+      </div></span></h2>
       <div class="field">
         <label>Item cost <span class="hint">USD</span></label>
         <div class="input-row">
@@ -803,17 +826,6 @@
           <input type="number" id="ppFixed" value="0.30" step="0.01" inputmode="decimal">
         </div>
       </div>
-      <details class="info-toggle">
-        <summary>About Merchant Rate tiers</summary>
-        <div class="info-body">
-          Requires PayPal application/approval and qualifying monthly volume:<br>
-          Up to $3,000 — 4.4%<br>
-          $3,000.01–$10,000 — 3.9%<br>
-          $10,000.01–$100,000 — 3.7%<br>
-          Above $100,000.01 — 3.4%<br><br>
-          Tier is looked up using the total amount received below (as a stand-in for monthly volume — PayPal actually bases this on your previous calendar month's total). The rate field above is auto-filled but editable if you know your actual approved rate.
-        </div>
-      </details>
     </div>
 
     <div class="card">
@@ -836,7 +848,9 @@
     </div>
 
     <div class="card">
-      <h2>What Should You Ask For?</h2>
+      <h2 class="h2-emphasis">What Should You Ask For?<span class="title-with-info"><button type="button" class="sup-info-btn" data-target="ppAskNote" aria-label="How this works">ⓘ</button><div class="floating-note" id="ppAskNote">
+        Enter the amount you want to end up with, and this suggests what to invoice or ask the buyer for so PayPal's fee doesn't eat into it. This is independent of the item/shipping amounts above.
+      </div></span></h2>
       <div class="field">
         <label>Amount you actually want to receive <span class="hint">USD, after PayPal's cut</span></label>
         <div class="input-row">
@@ -844,7 +858,6 @@
           <input type="number" id="ppDesiredNet" value="" placeholder="0" step="0.01" inputmode="decimal">
         </div>
       </div>
-      <div class="tax-note" id="ppSuggestNote">Enter the amount you want to end up with, and this suggests what to invoice or ask the buyer for so PayPal's fee doesn't eat into it. This is independent of the item/shipping amounts above.</div>
     </div>
 
     <div class="payout" id="ppSuggestBox" style="display:none;">
@@ -1193,7 +1206,7 @@
     if(inadOn) modPP += 5;
 
     const catCode = el('categorySel').value;
-    let fvf, fvfDesc, noPerOrderFee = false;
+    let fvf, fvfDesc, noPerOrderFee = false, nominalRate;
 
     if(catCode && catCode !== 'custom' && CATEGORIES[catCode]){
       const cat = CATEGORIES[catCode];
@@ -1203,22 +1216,26 @@
           fvf = round2(base * r / 100);
           fvfDesc = `${base.toFixed(2)} × ${r.toFixed(2)}% (≥$150 tier, no per-order fee)`;
           noPerOrderFee = true;
+          nominalRate = r;
         } else {
           const r = Math.max(0, 13.6 + modPP);
           fvf = round2(base * r / 100);
           fvfDesc = `${base.toFixed(2)} × ${r.toFixed(2)}% (<$150 tier)`;
+          nominalRate = r;
         }
       } else {
         const res = tieredFee(base, cat.tiers, modPP);
         fvf = res.fee;
         fvfDesc = res.desc;
+        nominalRate = Math.max(0, cat.tiers[0][1] + modPP);
       }
       if(sellerStatus === 'trs'){
         const preTRS = fvf;
         fvf = round2(fvf * 0.9);
         fvfDesc += ` → ×90% (Top Rated Seller): ${preTRS.toFixed(2)} → ${fvf.toFixed(2)}`;
+        nominalRate = round2(nominalRate * 0.9);
       }
-      el('fvfRate').value = base > 0 ? (fvf / base * 100).toFixed(2) : '0.00';
+      el('fvfRate').value = base > 0 ? (fvf / base * 100).toFixed(2) : nominalRate.toFixed(2);
       el('fvfRate').readOnly = true;
     } else {
       const fvfR = (parseFloat(el('fvfRate').value) || 0) / 100;
@@ -1416,14 +1433,22 @@ Note: this suggestion looks up its own Merchant Rate tier based on the ask amoun
 
   switchTab('paypal');
 
-  // Floating disclaimer: click icon to open, click anywhere else to close.
-  el('ebayInfoBtn').addEventListener('click', (e) => {
-    e.stopPropagation();
-    el('ebayFloatingNote').classList.toggle('open');
+  // Generalized floating info popovers: click a .sup-info-btn to open its
+  // matching .floating-note; click anywhere outside closes any open ones.
+  document.querySelectorAll('.sup-info-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const target = document.getElementById(btn.dataset.target);
+      const wasOpen = target.classList.contains('open');
+      document.querySelectorAll('.floating-note.open').forEach(n => n.classList.remove('open'));
+      if(!wasOpen) target.classList.add('open');
+    });
   });
-  el('ebayFloatingNote').addEventListener('click', (e) => e.stopPropagation());
+  document.querySelectorAll('.floating-note').forEach(note => {
+    note.addEventListener('click', (e) => e.stopPropagation());
+  });
   document.addEventListener('click', () => {
-    el('ebayFloatingNote').classList.remove('open');
+    document.querySelectorAll('.floating-note.open').forEach(n => n.classList.remove('open'));
   });
 </script>
 </body>
