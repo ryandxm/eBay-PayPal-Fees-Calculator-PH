@@ -445,6 +445,158 @@
     line-height: 1.5;
   }
 
+  .forex-card{
+    max-width: 400px;
+    margin: 0 auto 10px;
+    padding: 10px 12px;
+    background: var(--calc-accent-dim);
+    border: 1px solid var(--calc-accent-line);
+    border-radius: 14px;
+    box-shadow: 0 1px 3px var(--shadow);
+  }
+  .forex-card-head{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 20px;
+  }
+  .forex-card-title{
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--calc-accent-text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .forex-live-dot{
+    width: 6px;
+    height: 6px;
+    flex: 0 0 6px;
+    border-radius: 50%;
+    background: #38A169;
+    box-shadow: 0 0 0 3px rgba(56,161,105,.14);
+  }
+  .forex-card.is-loading .forex-live-dot,
+  .forex-card.has-error .forex-live-dot{
+    background: var(--text-faint);
+    box-shadow: none;
+  }
+  .forex-status-wrap{
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+  }
+  .forex-status{
+    max-width: 118px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text-faint);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+  }
+  .forex-refresh{
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--calc-accent-text);
+    font: 16px/1 'IBM Plex Mono', monospace;
+    cursor: pointer;
+  }
+  .forex-refresh:disabled{ opacity: .45; }
+  .forex-refresh:focus-visible{
+    outline: 2px solid var(--calc-accent-line);
+    outline-offset: 1px;
+  }
+  .forex-converter{
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.18fr);
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .forex-field{
+    height: 40px;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0 8px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+  }
+  .forex-code{
+    flex: 0 0 auto;
+    color: var(--text-faint);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+  }
+  .forex-amount{
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: right;
+  }
+  .forex-equals{
+    color: var(--calc-accent-text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .forex-result{
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: right;
+  }
+  .forex-currency{
+    width: 58px;
+    min-width: 58px;
+    padding: 4px 2px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--calc-accent-text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .forex-note{
+    min-height: 13px;
+    margin-top: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text-faint);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8.5px;
+    text-align: center;
+  }
+
   .calculator-shell{
     max-width: 400px;
     margin: 0 auto;
@@ -479,14 +631,20 @@
   }
   .calculator-expression{
     min-height: 18px;
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    width: 100%;
+    max-height: 44px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overflow-wrap: anywhere;
+    white-space: normal;
+    scrollbar-width: none;
     font-family: 'IBM Plex Mono', monospace;
     font-size: 11px;
+    line-height: 1.35;
+    text-align: right;
     color: var(--text-faint);
   }
+  .calculator-expression::-webkit-scrollbar{ display: none; }
   .calculator-result{
     max-width: 100%;
     overflow: hidden;
@@ -560,11 +718,55 @@
     body.theme-calculator .wrap{
       padding-top: calc(var(--header-height) + env(safe-area-inset-top) + 14px);
     }
-    body.theme-calculator .eyebrow{ margin-bottom: 3px; }
-    body.theme-calculator h1{ font-size: 22px; }
+    body.theme-calculator .eyebrow{
+      display: block;
+      margin-bottom: 1px;
+      font-size: 10px;
+      line-height: 1.2;
+    }
+    body.theme-calculator h1{
+      margin-bottom: 2px;
+      font-size: 22px;
+      line-height: 1.15;
+    }
     body.theme-calculator .sub{
-      margin-bottom: 12px;
-      line-height: 1.35;
+      display: block;
+      margin-bottom: 6px;
+      font-size: 12px;
+      line-height: 1.25;
+    }
+    .forex-card{
+      margin-bottom: 8px;
+      padding: 7px 9px;
+      border-radius: 12px;
+    }
+    .forex-card-head{
+      min-height: 16px;
+      gap: 6px;
+    }
+    .forex-card-title{
+      gap: 5px;
+      font-size: 9.5px;
+    }
+    .forex-status{ max-width: 150px; }
+    .forex-refresh{
+      width: 20px;
+      height: 20px;
+      font-size: 14px;
+    }
+    .forex-converter{
+      gap: 5px;
+      margin-top: 4px;
+    }
+    .forex-field{
+      height: 36px;
+      padding: 0 7px;
+      border-radius: 9px;
+    }
+    .forex-note{
+      min-height: 10px;
+      margin-top: 2px;
+      font-size: 8px;
     }
     .calculator-shell{
       padding: 12px;
@@ -595,10 +797,6 @@
     body.theme-calculator .wrap{
       padding-top: calc(var(--header-height) + env(safe-area-inset-top) + 10px);
     }
-    body.theme-calculator .sub{
-      margin-bottom: 8px;
-      font-size: 12.5px;
-    }
     .calculator-shell{ padding: 10px; }
     .calculator-display{
       min-height: 64px;
@@ -619,9 +817,31 @@
 
   @media (max-width: 600px) and (max-height: 620px){
     body.theme-calculator .wrap{
-      padding-top: calc(var(--header-height) + env(safe-area-inset-top) + 8px);
+      padding-top: calc(var(--header-height) + env(safe-area-inset-top) + 6px);
     }
-    body.theme-calculator .sub{ display: none; }
+    body.theme-calculator .eyebrow{ font-size: 9px; }
+    body.theme-calculator h1{ font-size: 19px; }
+    body.theme-calculator .sub{
+      margin-bottom: 4px;
+      font-size: 10.5px;
+    }
+    .forex-card{
+      margin-bottom: 4px;
+      padding: 5px 7px;
+    }
+    .forex-card-head,
+    .forex-note{ display: none; }
+    .forex-converter{ margin-top: 0; }
+    .forex-field{ height: 34px; }
+    .calculator-shell{ padding: 7px; }
+    .calculator-display{
+      min-height: 46px;
+      padding: 5px 8px;
+    }
+    .calculator-keypad{
+      gap: 5px;
+      margin-top: 4px;
+    }
   }
 
   .card{
@@ -1410,9 +1630,47 @@
 
   <!-- ===================== CALCULATOR TAB ===================== -->
   <div id="calculatorTab" role="tabpanel" aria-labelledby="tabCalculatorBtn">
-    <div class="eyebrow">Quick utility</div>
-    <h1>Calculator</h1>
-    <p class="sub">Basic arithmetic without leaving your seller-fee workspace.</p>
+    <div class="eyebrow">Utility</div>
+    <h1>Forex + Calculator</h1>
+    <p class="sub">Live USD reference rates and quick arithmetic.</p>
+
+    <section class="forex-card is-loading" id="forexCard" aria-labelledby="forexTitle">
+      <div class="forex-card-head">
+        <div class="forex-card-title" id="forexTitle"><span class="forex-live-dot" aria-hidden="true"></span>Latest USD rate</div>
+        <div class="forex-status-wrap">
+          <span class="forex-status" id="forexStatus" role="status">Connecting…</span>
+          <button type="button" class="forex-refresh" id="forexRefreshBtn" aria-label="Refresh exchange rates" title="Refresh exchange rates">↻</button>
+        </div>
+      </div>
+      <div class="forex-converter">
+        <label class="forex-field">
+          <span class="forex-code">USD</span>
+          <input class="forex-amount" type="number" id="forexAmount" value="1" min="0" step="any" inputmode="decimal" aria-label="Amount in US dollars">
+        </label>
+        <span class="forex-equals" aria-hidden="true">=</span>
+        <div class="forex-field">
+          <output class="forex-result" id="forexResult" aria-live="polite">—</output>
+          <select class="forex-currency" id="forexCurrency" aria-label="Target currency">
+            <option value="PHP" selected>PHP</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="JPY">JPY</option>
+            <option value="AUD">AUD</option>
+            <option value="CAD">CAD</option>
+            <option value="SGD">SGD</option>
+            <option value="HKD">HKD</option>
+            <option value="CNY">CNY</option>
+            <option value="KRW">KRW</option>
+            <option value="INR">INR</option>
+            <option value="THB">THB</option>
+            <option value="MYR">MYR</option>
+            <option value="NZD">NZD</option>
+            <option value="CHF">CHF</option>
+          </select>
+        </div>
+      </div>
+      <div class="forex-note" id="forexNote">Latest daily reference rate · banks and PayPal may differ</div>
+    </section>
 
     <div class="calculator-shell" tabindex="0" aria-label="Calculator keypad; keyboard input supported">
       <div class="calculator-display" aria-live="polite" aria-atomic="true">
@@ -1481,6 +1739,109 @@
     document.body.classList.toggle('theme-calculator', tab === 'calculator');
   }
 
+  // ============ LATEST USD FOREX RATES ============
+
+  const FOREX_API_URL = 'https://api.frankfurter.dev/v1/latest?base=USD';
+  const FOREX_AUTO_REFRESH_MS = 15 * 60 * 1000;
+  let forexRates = {};
+  let forexRateDate = '';
+  let forexLastRefreshAt = 0;
+  let forexFetchInFlight = false;
+
+  function formatForexValue(value){
+    if(!Number.isFinite(value)) return '—';
+    const digits = Math.abs(value) >= 100 ? 2 : 4;
+    return new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: digits
+    }).format(value);
+  }
+
+  function formatForexDate(dateString){
+    const date = new Date(`${dateString}T00:00:00Z`);
+    if(Number.isNaN(date.getTime())) return dateString;
+    return new Intl.DateTimeFormat('en-US', {
+      month: 'short', day: 'numeric', timeZone: 'UTC'
+    }).format(date);
+  }
+
+  function formatForexTime(date = new Date()){
+    return new Intl.DateTimeFormat('en-US', {
+      hour: 'numeric', minute: '2-digit'
+    }).format(date);
+  }
+
+  function renderForexConversion(){
+    const amount = Number.parseFloat(el('forexAmount').value);
+    const currency = el('forexCurrency').value;
+    const rate = forexRates[currency];
+    if(!Number.isFinite(amount) || amount < 0 || !Number.isFinite(rate)){
+      el('forexResult').textContent = '—';
+      return;
+    }
+    el('forexResult').textContent = formatForexValue(amount * rate);
+    const rateDateLabel = forexRateDate ? formatForexDate(forexRateDate) : 'latest';
+    el('forexNote').textContent = `Rate ${rateDateLabel} · 1 USD = ${formatForexValue(rate)} ${currency}`;
+  }
+
+  async function fetchForexRates(){
+    if(forexFetchInFlight) return;
+    const card = el('forexCard');
+    const refreshButton = el('forexRefreshBtn');
+    const hadValidRates = Object.keys(forexRates).length > 0;
+    forexFetchInFlight = true;
+    forexLastRefreshAt = Date.now();
+    card.classList.add('is-loading');
+    card.classList.remove('has-error');
+    refreshButton.disabled = true;
+    el('forexStatus').textContent = hadValidRates ? 'Refreshing…' : 'Connecting…';
+    try{
+      const response = await fetch(FOREX_API_URL, { cache: 'no-store' });
+      if(!response.ok) throw new Error(`Rate service returned ${response.status}`);
+      const data = await response.json();
+      if(data.base !== 'USD' || !data.rates || !Number.isFinite(data.rates.PHP)){
+        throw new Error('Rate service returned incomplete data');
+      }
+      forexRates = data.rates;
+      forexRateDate = data.date || '';
+      card.classList.remove('is-loading');
+      const checkedTime = formatForexTime();
+      el('forexStatus').textContent = `Auto · ${checkedTime}`;
+      el('forexStatus').title = `${forexRateDate ? `Rate date ${formatForexDate(forexRateDate)}; ` : ''}last checked ${checkedTime}`;
+      renderForexConversion();
+    } catch(error){
+      card.classList.remove('is-loading');
+      card.classList.add('has-error');
+      if(hadValidRates){
+        el('forexStatus').textContent = 'Auto retry pending';
+        el('forexNote').textContent = 'Last valid reference rate · refresh temporarily unavailable';
+      } else {
+        forexRates = {};
+        forexRateDate = '';
+        el('forexStatus').textContent = 'Unavailable';
+        el('forexResult').textContent = '—';
+        el('forexNote').textContent = 'Live rate unavailable · check your connection and retry';
+      }
+    } finally {
+      forexFetchInFlight = false;
+      refreshButton.disabled = false;
+    }
+  }
+
+  function refreshForexIfDue(){
+    if(document.hidden || forexFetchInFlight) return;
+    if(Date.now() - forexLastRefreshAt >= FOREX_AUTO_REFRESH_MS) fetchForexRates();
+  }
+
+  el('forexAmount').addEventListener('input', renderForexConversion);
+  el('forexCurrency').addEventListener('change', renderForexConversion);
+  el('forexRefreshBtn').addEventListener('click', fetchForexRates);
+  window.setInterval(refreshForexIfDue, FOREX_AUTO_REFRESH_MS);
+  window.addEventListener('focus', refreshForexIfDue);
+  window.addEventListener('online', fetchForexRates);
+  document.addEventListener('visibilitychange', refreshForexIfDue);
+  fetchForexRates();
+
   // ============ CALCULATOR LOGIC ============
 
   const CALCULATOR_SYMBOLS = {
@@ -1491,6 +1852,10 @@
   let calculatorOperator = null;
   let calculatorWaitingForOperand = false;
   let calculatorHasError = false;
+  let calculatorHasInput = false;
+  let calculatorHistory = [];
+  let calculatorHistoryComplete = false;
+  let calculatorErrorMessage = '';
 
   function formatCalculatorNumber(number){
     if(!Number.isFinite(number)) return null;
@@ -1501,6 +1866,19 @@
 
   function renderCalculator(){
     el('calculatorDisplay').textContent = calculatorCurrent;
+    const expression = el('calculatorExpression');
+    if(calculatorHasError){
+      expression.textContent = calculatorErrorMessage;
+    } else {
+      const visibleHistory = [...calculatorHistory];
+      if(calculatorHasInput && !calculatorWaitingForOperand && !calculatorHistoryComplete){
+        visibleHistory.push(calculatorCurrent);
+      }
+      expression.textContent = visibleHistory.length
+        ? visibleHistory.join(' ')
+        : calculatorHasInput ? calculatorCurrent : 'Ready';
+    }
+    expression.scrollTop = expression.scrollHeight;
     document.querySelectorAll('[data-calc-operator]').forEach(button => {
       button.classList.toggle('is-active', button.dataset.calcOperator === calculatorOperator);
     });
@@ -1512,33 +1890,50 @@
     calculatorOperator = null;
     calculatorWaitingForOperand = false;
     calculatorHasError = false;
-    el('calculatorExpression').textContent = 'Ready';
+    calculatorHasInput = false;
+    calculatorHistory = [];
+    calculatorHistoryComplete = false;
+    calculatorErrorMessage = '';
     renderCalculator();
   }
 
   function inputCalculatorDigit(digit){
     if(calculatorHasError || calculatorWaitingForOperand){
+      if(calculatorHasError || calculatorHistoryComplete){
+        calculatorStored = null;
+        calculatorOperator = null;
+        calculatorHistory = [];
+        calculatorHistoryComplete = false;
+      }
       calculatorCurrent = digit;
       calculatorWaitingForOperand = false;
       calculatorHasError = false;
-      if(calculatorOperator === null) el('calculatorExpression').textContent = 'Ready';
+      calculatorErrorMessage = '';
     } else if(calculatorCurrent === '0'){
       calculatorCurrent = digit;
     } else if(calculatorCurrent.replace(/[-.]/g, '').length < 12){
       calculatorCurrent += digit;
     }
+    calculatorHasInput = true;
     renderCalculator();
   }
 
   function inputCalculatorDecimal(){
     if(calculatorHasError || calculatorWaitingForOperand){
+      if(calculatorHasError || calculatorHistoryComplete){
+        calculatorStored = null;
+        calculatorOperator = null;
+        calculatorHistory = [];
+        calculatorHistoryComplete = false;
+      }
       calculatorCurrent = '0.';
       calculatorWaitingForOperand = false;
       calculatorHasError = false;
-      if(calculatorOperator === null) el('calculatorExpression').textContent = 'Ready';
+      calculatorErrorMessage = '';
     } else if(!calculatorCurrent.includes('.')){
       calculatorCurrent += '.';
     }
+    calculatorHasInput = true;
     renderCalculator();
   }
 
@@ -1556,15 +1951,37 @@
     calculatorOperator = null;
     calculatorWaitingForOperand = true;
     calculatorHasError = true;
-    el('calculatorExpression').textContent = message;
+    calculatorHasInput = true;
+    calculatorHistoryComplete = false;
+    calculatorErrorMessage = message;
     renderCalculator();
   }
 
   function chooseCalculatorOperator(nextOperator){
     if(calculatorHasError) return;
     const inputValue = Number(calculatorCurrent);
+    const nextSymbol = CALCULATOR_SYMBOLS[nextOperator];
+
+    if(calculatorHistoryComplete){
+      calculatorHistory = [calculatorCurrent, nextSymbol];
+      calculatorHistoryComplete = false;
+      calculatorStored = inputValue;
+      calculatorOperator = nextOperator;
+      calculatorWaitingForOperand = true;
+      calculatorHasInput = true;
+      renderCalculator();
+      return;
+    }
+
+    if(calculatorWaitingForOperand && calculatorOperator){
+      calculatorOperator = nextOperator;
+      calculatorHistory[calculatorHistory.length - 1] = nextSymbol;
+      renderCalculator();
+      return;
+    }
 
     if(calculatorStored !== null && calculatorOperator && !calculatorWaitingForOperand){
+      calculatorHistory.push(calculatorCurrent);
       const result = calculateResult(calculatorStored, inputValue, calculatorOperator);
       const formatted = result === null ? null : formatCalculatorNumber(result);
       if(formatted === null){
@@ -1575,11 +1992,13 @@
       calculatorCurrent = formatted;
     } else if(calculatorStored === null){
       calculatorStored = inputValue;
+      calculatorHistory = [calculatorCurrent];
     }
 
     calculatorOperator = nextOperator;
     calculatorWaitingForOperand = true;
-    el('calculatorExpression').textContent = `${formatCalculatorNumber(calculatorStored)} ${CALCULATOR_SYMBOLS[nextOperator]}`;
+    calculatorHasInput = true;
+    calculatorHistory.push(nextSymbol);
     renderCalculator();
   }
 
@@ -1595,28 +2014,45 @@
       return;
     }
 
-    el('calculatorExpression').textContent = `${formatCalculatorNumber(left)} ${CALCULATOR_SYMBOLS[operator]} ${formatCalculatorNumber(right)} =`;
+    calculatorHistory.push(calculatorCurrent, '=');
+    calculatorHistoryComplete = true;
     calculatorCurrent = formatted;
     calculatorStored = null;
     calculatorOperator = null;
     calculatorWaitingForOperand = true;
+    calculatorHasInput = true;
     renderCalculator();
   }
 
   function toggleCalculatorSign(){
     if(calculatorHasError || calculatorCurrent === '0') return;
+    if(calculatorHistoryComplete){
+      calculatorHistory = [];
+      calculatorHistoryComplete = false;
+      calculatorStored = null;
+      calculatorOperator = null;
+      calculatorWaitingForOperand = false;
+    }
     calculatorCurrent = calculatorCurrent.startsWith('-')
       ? calculatorCurrent.slice(1)
       : `-${calculatorCurrent}`;
+    calculatorHasInput = true;
     renderCalculator();
   }
 
   function percentCalculatorValue(){
     if(calculatorHasError) return;
+    if(calculatorHistoryComplete){
+      calculatorHistory = [];
+      calculatorHistoryComplete = false;
+      calculatorStored = null;
+      calculatorOperator = null;
+    }
     const formatted = formatCalculatorNumber(Number(calculatorCurrent) / 100);
     if(formatted === null) return;
     calculatorCurrent = formatted;
     calculatorWaitingForOperand = false;
+    calculatorHasInput = true;
     renderCalculator();
   }
 
@@ -1643,6 +2079,7 @@
 
   document.addEventListener('keydown', event => {
     if(el('calculatorTab').style.display === 'none') return;
+    if(event.target.closest('input, select, textarea, [contenteditable="true"]')) return;
     if(/^\d$/.test(event.key)) inputCalculatorDigit(event.key);
     else if(event.key === '.') inputCalculatorDecimal();
     else if(event.key === '+') chooseCalculatorOperator('add');
