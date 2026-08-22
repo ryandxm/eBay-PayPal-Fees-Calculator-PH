@@ -62,9 +62,38 @@
     --accent-text: var(--pp-accent-text);
   }
 
-  /* Auto dark mode, following the iPhone system appearance setting */
+  /* Dark palette: applies automatically via system Appearance setting,
+     unless overridden by the manual in-app toggle (adds/removes these classes
+     on <html>). Also applies directly when the toggle forces dark mode. */
+  :root.theme-forced-dark{
+    --bg: #17181A;
+    --panel: #202225;
+    --panel-2: #292B2F;
+    --line: #37393E;
+    --text: #EDEEF0;
+    --text-dim: #A7ADB5;
+    --text-faint: #797F87;
+    --red: #FF8A7E;
+    --green: #7DCC9E;
+    --shadow: rgba(0,0,0,0.25);
+    --shadow-strong: rgba(0,0,0,0.45);
+
+    --ebay-accent: #7FCB9E;
+    --ebay-accent-dim: #1E3327;
+    --ebay-accent-line: #3D6E51;
+    --ebay-accent-text: #93DDB2;
+
+    --pp-accent: #6FBBEC;
+    --pp-accent-dim: #1B2E3C;
+    --pp-accent-line: #3D6685;
+    --pp-accent-text: #8FD0F5;
+
+    --warn-text: #E8C97A;
+    --warn-bg: #362B14;
+    --warn-border: #5C4A20;
+  }
   @media (prefers-color-scheme: dark){
-    :root{
+    :root:not(.theme-forced-light):not(.theme-forced-dark){
       --bg: #17181A;
       --panel: #202225;
       --panel-2: #292B2F;
@@ -105,7 +134,26 @@
   .wrap{
     max-width: 560px;
     margin: 0 auto;
-    padding: 20px 18px 60px;
+    padding: 56px 18px 60px;
+  }
+
+  .theme-toggle-btn{
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 50;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    box-shadow: 0 2px 8px var(--shadow);
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text);
   }
 
   .platform-tabs{
@@ -121,22 +169,34 @@
   .platform-tab{
     flex:1;
     text-align:center;
-    padding: 12px 8px;
+    padding: 8px;
     border-radius: 10px;
-    font-size: 13.5px;
-    font-weight: 600;
     cursor: pointer;
     user-select:none;
-    color: var(--text-dim);
     transition: all .15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .platform-tab.tab-ebay.active{
     background: var(--ebay-accent-dim);
-    color: var(--ebay-accent-text);
   }
   .platform-tab.tab-paypal.active{
     background: var(--pp-accent-dim);
-    color: var(--pp-accent-text);
+  }
+  .tab-logo-chip{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #FFFFFF;
+    border-radius: 8px;
+    padding: 7px 14px;
+    width: 100%;
+  }
+  .tab-logo{
+    height: 20px;
+    width: auto;
+    display: block;
   }
 
   .eyebrow{
@@ -566,11 +626,12 @@
 </style>
 </head>
 <body class="theme-paypal">
+<button type="button" id="themeToggleBtn" class="theme-toggle-btn" aria-label="Toggle dark/light mode">🌙</button>
 <div class="wrap">
 
   <div class="platform-tabs">
-    <div class="platform-tab tab-paypal active" id="tabPaypalBtn" onclick="switchTab('paypal')">PayPal Fees</div>
-    <div class="platform-tab tab-ebay" id="tabEbayBtn" onclick="switchTab('ebay')">eBay Fees</div>
+    <div class="platform-tab tab-paypal active" id="tabPaypalBtn" onclick="switchTab('paypal')"><span class="tab-logo-chip"><img src="paypal-logo.png" alt="PayPal Fees" class="tab-logo"></span></div>
+    <div class="platform-tab tab-ebay" id="tabEbayBtn" onclick="switchTab('ebay')"><span class="tab-logo-chip"><img src="ebay-logo.png" alt="eBay Fees" class="tab-logo"></span></div>
   </div>
 
   <!-- ===================== EBAY TAB ===================== -->
@@ -1426,6 +1487,16 @@ Note: this suggestion looks up its own Merchant Rate tier based on the ask amoun
   setMode('us');
   calc();
 
+  // Auto-fill "what should you ask for" from item cost, for convenience —
+  // stops syncing the moment the person types into the field themselves.
+  let desiredNetTouched = false;
+  el('ppDesiredNet').addEventListener('input', () => { desiredNetTouched = true; });
+  el('ppItemAmount').addEventListener('input', () => {
+    if(!desiredNetTouched){
+      el('ppDesiredNet').value = el('ppItemAmount').value;
+    }
+  });
+
   ['ppItemAmount','ppShipAmount','ppFixed','ppDesiredNet'].forEach(id => {
     el(id).addEventListener('input', calcPayPal);
   });
@@ -1450,6 +1521,34 @@ Note: this suggestion looks up its own Merchant Rate tier based on the ask amoun
   document.addEventListener('click', () => {
     document.querySelectorAll('.floating-note.open').forEach(n => n.classList.remove('open'));
   });
+
+  // Manual dark/light toggle. Defaults to following the system Appearance
+  // setting; once tapped, the explicit choice is remembered (localStorage)
+  // and overrides the system setting until toggled back to "auto".
+  function systemPrefersDark(){
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  }
+  function effectiveIsDark(){
+    const root = document.documentElement;
+    if(root.classList.contains('theme-forced-dark')) return true;
+    if(root.classList.contains('theme-forced-light')) return false;
+    return systemPrefersDark();
+  }
+  function applyStoredTheme(){
+    const root = document.documentElement;
+    const stored = localStorage.getItem('themePref'); // 'light' | 'dark' | null
+    root.classList.remove('theme-forced-light','theme-forced-dark');
+    if(stored === 'light') root.classList.add('theme-forced-light');
+    if(stored === 'dark') root.classList.add('theme-forced-dark');
+    el('themeToggleBtn').textContent = effectiveIsDark() ? '☀️' : '🌙';
+  }
+  el('themeToggleBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const nowDark = effectiveIsDark();
+    localStorage.setItem('themePref', nowDark ? 'light' : 'dark');
+    applyStoredTheme();
+  });
+  applyStoredTheme();
 </script>
 </body>
 </html>
