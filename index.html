@@ -1746,19 +1746,19 @@
 
   // ============ LATEST USD FOREX RATES ============
 
-  const FOREX_API_URL = 'https://api.frankfurter.dev/v1/latest?base=USD';
+  const FOREX_API_URL = 'https://api.frankfurter.dev/v2/rates?base=USD';
   const FOREX_AUTO_REFRESH_MS = 15 * 60 * 1000;
   let forexRates = {};
-  let forexRateDate = '';
+  let forexRateDates = {};
+  let forexLastCheckedTime = '';
   let forexLastRefreshAt = 0;
   let forexFetchInFlight = false;
 
   function formatForexValue(value){
     if(!Number.isFinite(value)) return '—';
-    const digits = Math.abs(value) >= 100 ? 2 : 4;
     return new Intl.NumberFormat('en-US', {
       minimumFractionDigits: 0,
-      maximumFractionDigits: digits
+      maximumFractionDigits: 12
     }).format(value);
   }
 
@@ -1780,13 +1780,15 @@
     const amount = Number.parseFloat(el('forexAmount').value);
     const currency = el('forexCurrency').value;
     const rate = forexRates[currency];
+    const rateDate = forexRateDates[currency] || '';
+    const rateDateLabel = rateDate ? formatForexDate(rateDate) : 'latest';
+    el('forexNote').textContent = `${rateDateLabel} · Frankfurter blend · 1 USD = ${formatForexValue(rate)} ${currency}`;
+    el('forexStatus').title = `${rateDate ? `Rate date ${formatForexDate(rateDate)}; ` : ''}${forexLastCheckedTime ? `last checked ${forexLastCheckedTime}` : 'not yet checked'}`;
     if(!Number.isFinite(amount) || amount < 0 || !Number.isFinite(rate)){
       el('forexResult').textContent = '—';
       return;
     }
     el('forexResult').textContent = formatForexValue(amount * rate);
-    const rateDateLabel = forexRateDate ? formatForexDate(forexRateDate) : 'latest';
-    el('forexNote').textContent = `${rateDateLabel} · Frankfurter blend · 1 USD = ${formatForexValue(rate)} ${currency}`;
   }
 
   async function fetchForexRates(){
@@ -1804,15 +1806,25 @@
       const response = await fetch(FOREX_API_URL, { cache: 'no-store' });
       if(!response.ok) throw new Error(`Rate service returned ${response.status}`);
       const data = await response.json();
-      if(data.base !== 'USD' || !data.rates || !Number.isFinite(data.rates.PHP)){
+      if(!Array.isArray(data)){
         throw new Error('Rate service returned incomplete data');
       }
-      forexRates = data.rates;
-      forexRateDate = data.date || '';
+      const nextRates = {};
+      const nextRateDates = {};
+      data.forEach(entry => {
+        if(entry.base === 'USD' && typeof entry.quote === 'string' && Number.isFinite(entry.rate)){
+          nextRates[entry.quote] = entry.rate;
+          nextRateDates[entry.quote] = entry.date || '';
+        }
+      });
+      if(!Number.isFinite(nextRates.PHP)){
+        throw new Error('Rate service returned incomplete data');
+      }
+      forexRates = nextRates;
+      forexRateDates = nextRateDates;
       card.classList.remove('is-loading');
-      const checkedTime = formatForexTime();
-      el('forexStatus').textContent = `Auto · ${checkedTime}`;
-      el('forexStatus').title = `${forexRateDate ? `Rate date ${formatForexDate(forexRateDate)}; ` : ''}last checked ${checkedTime}`;
+      forexLastCheckedTime = formatForexTime();
+      el('forexStatus').textContent = `Auto · ${forexLastCheckedTime}`;
       renderForexConversion();
     } catch(error){
       card.classList.remove('is-loading');
@@ -1822,7 +1834,8 @@
         el('forexNote').textContent = 'Last valid reference rate · refresh temporarily unavailable';
       } else {
         forexRates = {};
-        forexRateDate = '';
+        forexRateDates = {};
+        forexLastCheckedTime = '';
         el('forexStatus').textContent = 'Unavailable';
         el('forexResult').textContent = '—';
         el('forexNote').textContent = 'Live rate unavailable · check your connection and retry';
