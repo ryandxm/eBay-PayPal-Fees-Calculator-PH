@@ -1650,7 +1650,7 @@
       <div class="forex-converter">
         <label class="forex-field">
           <span class="forex-code">USD</span>
-          <input class="forex-amount" type="number" id="forexAmount" value="1" min="0" step="any" inputmode="decimal" aria-label="Amount in US dollars">
+          <input class="forex-amount" type="number" id="forexAmount" value="1" step="any" inputmode="decimal" aria-label="Amount in US dollars">
         </label>
         <span class="forex-equals" aria-hidden="true">=</span>
         <div class="forex-field">
@@ -1784,7 +1784,7 @@
     const rateDateLabel = rateDate ? formatForexDate(rateDate) : 'latest';
     el('forexNote').textContent = `${rateDateLabel} · Frankfurter blend · 1 USD = ${formatForexValue(rate)} ${currency}`;
     el('forexStatus').title = `${rateDate ? `Rate date ${formatForexDate(rateDate)}; ` : ''}${forexLastCheckedTime ? `last checked ${forexLastCheckedTime}` : 'not yet checked'}`;
-    if(!Number.isFinite(amount) || amount < 0 || !Number.isFinite(rate)){
+    if(!Number.isFinite(amount) || !Number.isFinite(rate)){
       el('forexResult').textContent = '—';
       return;
     }
@@ -1890,6 +1890,11 @@
       liveDisplay = formattedLiveResult === null ? 'Error' : formattedLiveResult;
     }
     el('calculatorDisplay').textContent = liveDisplay;
+    const liveAmount = Number(liveDisplay);
+    if(!calculatorHasError && Number.isFinite(liveAmount)){
+      el('forexAmount').value = calculatorHasInput ? String(liveAmount) : '1';
+      renderForexConversion();
+    }
     const expression = el('calculatorExpression');
     if(calculatorHasError){
       expression.textContent = calculatorErrorMessage;
